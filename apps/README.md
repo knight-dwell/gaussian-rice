@@ -12,8 +12,8 @@ and an `i3-snippet.conf` with the i3 lines to add.
 Fetch only one folder without cloning everything:
 
 ```sh
-git clone --filter=blob:none --sparse https://github.com/knight-dwell/config-dump
-cd config-dump && git sparse-checkout set apps/dock      # or apps/sysmon, apps/clipboard, apps
+git clone --filter=blob:none --sparse https://github.com/knight-dwell/gaussian-rice
+cd gaussian-rice && git sparse-checkout set apps/dock      # or apps/sysmon, apps/clipboard, apps
 cd apps/dock && ./install.sh
 ```
 
