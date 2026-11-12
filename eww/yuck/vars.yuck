@@ -10,8 +10,8 @@
   "~/.config/eww/scripts/workspaces/workspaces-listen.py")
 (deflisten volume :initial '{"ready":false,"level":0,"muted":true,"sink":""}'
   "~/.config/eww/scripts/audio/volume-listen.sh")
-(deflisten music :initial '{"player":"","status":"Stopped","title":"","artist":"","art":"","source":"music"}'
-  "~/.config/eww/scripts/music/music-listen.sh")
+(deflisten music :initial '{"player":"","status":"Stopped","title":"","artist":"","art":"","source":"music","players":[]}'
+  "~/.config/eww/scripts/music/music-listen.py")   ; sticky player choice + all players (music-listen.sh = old version)
 (deflisten net :initial '{"state":"disconnected","ssid":"","signal":0,"level":0,"ip":"","device":"","radio":true,"ethernet":{"present":false,"connected":false,"device":"","ip":""},"vpn":[],"running":true}'
   "~/.config/eww/scripts/network/network.py listen")
 (deflisten bt :initial '{"available":false,"powered":false,"connected":[],"count":0}'

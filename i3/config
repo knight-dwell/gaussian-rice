@@ -279,6 +279,11 @@ for_window [class="RiceDock"] floating enable, sticky enable, border none
 exec --no-startup-id ~/.local/bin/rice-dock
 # system monitor (eww window): floating, centered; drag with Super + mouse
 for_window [title="^Eww - sysmon$"] floating enable, move position center
+# media popup (right-click the bar's music pill): like the other eww popups
+for_window [title="^Eww - players$"] floating enable, border none, sticky enable
+# YouTube mini player: Firefox Picture-in-Picture as a borderless floating card on
+# every workspace, bottom-right (drag it with the mouse or Super + mouse)
+for_window [class="firefox" title="^Picture-in-Picture$"] floating enable, sticky enable, border none, resize set 512 px 288 px, move position 1388 px 772 px
 
 # ── [rice] Phase 5: lock screen (settings: ~/.config/lockscreen/lock.conf) ──
 # Super+Escape locks (Super+L stays "focus right"). Alt+Ctrl+Return still runs
@@ -302,6 +307,13 @@ bindsym $mod+v exec --no-startup-id ~/.local/bin/rice-clip pick
 # dropdown terminal in the scratchpad (Super+T shows/hides, keeps its contents)
 for_window [class="^dropdown$"] floating enable, resize set 80 ppt 45 ppt, move scratchpad, scratchpad show, move position 10 ppt 56 px
 bindsym $mod+t exec --no-startup-id ~/.config/i3/scripts/dropdown.sh
+# mini terminal (retired 2026-11-12: you wanted the small window for YouTube only)
+# for_window [class="^miniterm$"] floating enable, sticky enable, border none, resize set 960 px 540 px, move position 20 px 520 px, move scratchpad, scratchpad show
+# bindsym $mod+Shift+Return exec --no-startup-id ~/.config/i3/scripts/miniterm.sh
+# YouTube window (Rice Tube): tiles like kitty (no for_window rule needed).
+# Earlier floating version, kept for reference:
+# for_window [class="^RiceTube$"] floating enable, sticky enable, border none, resize set 960 px 540 px, move position 940 px 520 px, move scratchpad, scratchpad show
+bindsym $mod+Shift+Return exec --no-startup-id ~/.config/i3/scripts/tube.sh
 # window switcher
 bindsym $mod+Tab exec --no-startup-id rofi -show window
 # night light: re-apply the mode chosen in quick settings (off/auto/on)

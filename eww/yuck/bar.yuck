@@ -48,12 +48,14 @@
         (label :class "icon" :text {ic.bell})
         (label :text {rem.today})))))
 
-;; Music: click = play/pause, scroll = next/previous. Equalizer animates while playing.
+;; Music: click = play/pause, scroll = next/previous, right-click = all players
+;; (pick which one the bar shows). Equalizer animates while playing.
 (defwidget music-w []
   (eventbox :visible {music.player != ""}
             :onclick "${B} ${S}/music/music.sh toggle ${music.player}"
+            :onrightclick "${B} ${S}/popup/popup.sh toggle players"
             :onscroll "[ {} = up ] && ${B} ${S}/music/music.sh next ${music.player} || ${B} ${S}/music/music.sh prev ${music.player}"
-            :tooltip "${music.player} · ${music.status}"
+            :tooltip "${music.player} · ${music.status} · right-click: all players"
     (box :class "pill music ${music.status == 'Playing' ? 'playing' : 'paused'}" :space-evenly false :spacing 8
       (box :class "eq" :space-evenly false :spacing 2 :valign "center"
         (box :class "eq-bar b1" :valign "end")

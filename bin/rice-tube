@@ -1,0 +1,3 @@
+#!/bin/sh
+# Rice Tube: YouTube in its own small window (~/.local/share/rice-apps)
+exec python3 "$HOME/.local/share/rice-apps/rice-tube.py" "$@"

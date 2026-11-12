@@ -67,6 +67,7 @@ DESCRIBE = [
     (r"playerctl previous", "Previous track"),
     (r"rice-clip pick", "Clipboard history"),
     (r"dropdown\.sh", "Dropdown terminal (show / hide)"),
+    (r"tube\.sh", "YouTube window, tiles like kitty (show / hide)"),
     (r"popup\.sh toggle quicksettings", "Quick settings"),
     (r"popup\.sh toggle network", "Network popup"),
     (r"popup\.sh toggle notifications", "Notifications"),
@@ -82,7 +83,7 @@ DESCRIBE = [
 ]
 
 GROUPS = [
-    ("Apps & launchers", r"kitty|rofi|thunar|elisa|command_exec|dropdown|flameshot|screenie|wallpaper|rice-(clip|dock|sysmon)|gaussian-keep|xkill|picom|polybar"),
+    ("Apps & launchers", r"kitty|rofi|thunar|elisa|command_exec|dropdown|tube\.sh|flameshot|screenie|wallpaper|rice-(clip|dock|sysmon)|gaussian-keep|xkill|picom|polybar"),
     ("Bar & popups", r"popup\.sh|toggle-details|rice-keys|rice-power-menu"),
     ("Workspaces", r"workspace"),
     ("Windows & layout", r"^(focus|move|split|layout|fullscreen|floating|kill)|^mode \"resize\""),

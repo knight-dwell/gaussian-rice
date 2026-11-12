@@ -7,7 +7,7 @@ EWW="$HOME/.local/bin/eww"
 # --no-daemonize: if the daemon is slow to answer, `eww open` would otherwise
 # start a SECOND daemon (and steal its socket), leaving popups that never close
 eww() { "$EWW" --no-daemonize "$@"; }
-POPUPS="quicksettings network bluetooth notifications calendar"
+POPUPS="quicksettings network bluetooth notifications calendar players"
 
 # one popup.sh at a time (the watcher's async close can race a toggle)
 exec 9>"${XDG_RUNTIME_DIR:-/tmp}/eww-popup.lock"

@@ -1,4 +1,4 @@
-i3 shortcuts (101 bindings, 26 new). Generated from the running config.
+i3 shortcuts (102 bindings, 27 new). Generated from the running config.
 
 ── Apps & launchers
    Super+Enter         Terminal (kitty)
@@ -17,6 +17,7 @@ i3 shortcuts (101 bindings, 26 new). Generated from the running config.
    Super+Shift+S       Screenshot tool (select area, annotate)
    Super+V             Clipboard history   [new]
    Super+T             Dropdown terminal (show / hide)   [new]
+   Super+Shift+Enter   YouTube window, tiles like kitty (show / hide)   [new]
    Super+Tab           Window switcher   [new]
    Super+Shift+W       Wallpaper picker   [new]
    Super+G             gaussian_keep (notes, planner, journal, reminders, git)   [new]

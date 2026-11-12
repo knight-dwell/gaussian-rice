@@ -296,3 +296,29 @@ progress, trough { min-height: 6px; border-radius: 999px; }
 .proc-head { color: $on-surface-variant; font-weight: bold; border-bottom: 1px solid $outline-variant; padding-bottom: 4px; margin-bottom: 2px; }
 .p-num { min-width: 70px; }
 .sysmon-btn { padding: 2px $space-md; }
+
+// ── Media players popup (right-click the music pill) ───────────────────────
+.players { min-width: 360px; }
+.players .sm-icon { font-size: 2em; color: $primary; }
+.player-card {
+  background-color: $surface-container-high;
+  border-radius: $radius;
+  padding: $space-md;
+  border: 2px solid transparent;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+.player-card:hover { background-color: $surface-container-highest; }
+.player-card.selected { background-color: $secondary-container; border-color: $primary; }
+.player-card.selected .media-title, .player-card.selected .player-src { color: $on-secondary-container; }
+.player-card .art {
+  min-width: 72px;
+  min-height: 72px;
+  border-radius: $radius - 4px;
+  background-color: $surface-container-highest;
+  background-size: cover;
+  background-position: center;
+}
+.player-src { color: $on-surface-variant; font-size: 0.85em; }
+.player-card.playing .player-src { color: $primary; }
+.sel-ic { color: $primary; }
+.empty-hint { padding: $space-lg; }

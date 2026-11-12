@@ -293,3 +293,49 @@ __EWW_REM_END__"
           (label :class "rem-date" :text {r.label})
           (label :class "rem-time" :text {r.time})
           (label :class "rem-text" :hexpand true :xalign 0 :limit-width 28 :text {r.text}))))))
+
+;; ─── Media players (right-click the bar's music pill) ─────────────────────────
+;; Every open player with its own controls. Click a card to show that player in
+;; the bar (music.sh select). Firefox cards get a Picture-in-Picture button.
+(defwindow players
+  :monitor 0
+  :geometry (geometry :x "392px" :y "56px" :width "360px" :anchor "top left")
+  :stacking "fg" :wm-ignore false :windowtype "dialog" :focusable true :resizable false
+  (players-popup))
+
+(defwidget players-popup []
+  (box :class "popup players" :orientation "v" :space-evenly false :spacing 8
+    (box :class "popup-header" :space-evenly false :spacing 10
+      (label :class "icon sm-icon" :text {ic.media})
+      (box :orientation "v" :space-evenly false :hexpand true
+        (label :class "popup-title" :xalign 0 :text "Media")
+        (label :class "hint" :xalign 0 :text "Tap a player to show it in the bar"))
+      (button :class "icon-btn flat" :tooltip "Close" :onclick "${B} ${S}/popup/popup.sh close"
+        (label :class "icon" :text {ic.close})))
+    (label :class "hint empty-hint" :visible {arraylength(music.players) == 0} :text "Nothing is playing")
+    (for p in {music.players}
+      (eventbox :class "player-card ${p.selected ? 'selected' : ''} ${p.status == 'Playing' ? 'playing' : ''}"
+                :cursor "pointer" :tooltip {p.selected ? "Shown in the bar" : "Show ${p.name} in the bar"}
+                :onclick "${B} ${S}/music/music.sh select ${p.player}"
+        (box :space-evenly false :spacing 12
+          (box :class "art" :style {p.art != "" ? "background-image: url('${p.art}');" : ""}
+            (label :class "icon art-fallback" :visible {p.art == ""}
+                   :text {p.source == "spotify" ? ic.spotify : p.source == "firefox" ? ic.firefox : p.source == "chrome" ? ic.chrome : ic.music}))
+          (box :orientation "v" :space-evenly false :hexpand true :valign "center" :spacing 2
+            (box :class "player-src" :space-evenly false :spacing 6
+              (label :class "icon" :text {p.source == "spotify" ? ic.spotify : p.source == "firefox" ? ic.firefox : p.source == "chrome" ? ic.chrome : ic.music})
+              (label :xalign 0 :hexpand true :text "${p.name} · ${p.status == 'Playing' ? 'playing' : 'paused'}")
+              (label :class "icon sel-ic" :visible {p.selected} :text {ic.selected}))
+            (label :class "media-title" :xalign 0 :limit-width 24 :text {p.title})
+            (label :class "media-artist" :xalign 0 :limit-width 28 :visible {p.artist != ""} :text {p.artist})
+            (box :class "media-controls" :halign "start" :space-evenly false :spacing 4
+              (button :class "icon-btn" :tooltip "Previous" :onclick "${B} ${S}/music/music.sh prev ${p.player}"
+                (label :class "icon" :text {ic.prev}))
+              (button :class "icon-btn primary" :tooltip {p.status == "Playing" ? "Pause" : "Play"}
+                      :onclick "${B} ${S}/music/music.sh toggle ${p.player}"
+                (label :class "icon" :text {p.status == "Playing" ? ic.pause : ic.play}))
+              (button :class "icon-btn" :tooltip "Next" :onclick "${B} ${S}/music/music.sh next ${p.player}"
+                (label :class "icon" :text {ic.next}))
+              (button :class "icon-btn" :visible {p.source == "firefox"}
+                      :tooltip "Pop the video out (mini player)" :onclick "${B} ${S}/music/music.sh pip ${p.player}"
+                (label :class "icon" :text {ic.pip})))))))))

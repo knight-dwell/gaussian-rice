@@ -21,6 +21,8 @@ More in [`docs/screenshots/`](docs/screenshots).
 - **Bat-signal terminal:** a fastfetch greeter with a random quote, joke or short story (mathematicians, physicists, philosophers), and the ket prompt `Ĥ|ψ⟩`.
 - **Terminal Studio:** a GUI for kitty's font, opacity, colors, prompt and startup art.
 - **Rice Dock:** a floating, collapsible launcher, where ＋ adds apps or shell aliases.
+- **Media popup:** right-click the bar's music pill to see every player (Spotify, Firefox, …) with its own controls, and click one to show it in the bar. The bar sticks to the player you used, so pausing Spotify no longer jumps to some paused Firefox tab.
+- **Rice Tube:** YouTube in its own window, not a browser tab. It tiles next to your terminals like kitty, Super+Shift+Enter shows/hides it while the video keeps playing, and links to other sites open in your browser. (`local-share/rice-apps/rice-tube.py`, toggle `i3/scripts/tube.sh`)
 - **Random red/blue window borders** (picom shader), smooth floating, autotiling, a dropdown terminal.
 - **Lock screen:** i3lock-color with a blurred wallpaper, clock and music, plus idle and before-suspend locking.
 - **Clipboard history**, battery/temperature alerts, a wallpaper picker (desktop + lock screen), a power menu, and a key cheat sheet generated from the live i3 config (Super+F1).
