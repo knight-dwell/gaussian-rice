@@ -1,0 +1,23 @@
+{
+  "_comment": "Bar/popup icons: key -> Nerd Font glyph name (see https://www.nerdfonts.com/cheat-sheet). Run scripts/gen-icons.py after editing.",
+  "wifi_0": "md-wifi_strength_outline", "wifi_1": "md-wifi_strength_1", "wifi_2": "md-wifi_strength_2",
+  "wifi_3": "md-wifi_strength_3", "wifi_4": "md-wifi_strength_4", "wifi_off": "md-wifi_strength_off_outline",
+  "ethernet": "md-ethernet", "net_off": "md-lan_disconnect", "lock": "md-lock", "vpn": "md-vpn",
+  "bt": "md-bluetooth", "bt_off": "md-bluetooth_off", "bt_conn": "md-bluetooth_connect",
+  "vol_high": "md-volume_high", "vol_med": "md-volume_medium", "vol_low": "md-volume_low", "vol_mute": "md-volume_off",
+  "bat_10": "md-battery_10", "bat_20": "md-battery_20", "bat_30": "md-battery_30", "bat_40": "md-battery_40",
+  "bat_50": "md-battery_50", "bat_60": "md-battery_60", "bat_70": "md-battery_70", "bat_80": "md-battery_80",
+  "bat_90": "md-battery_90", "bat_full": "md-battery", "bat_charging": "md-battery_charging", "bat_empty": "md-battery_outline",
+  "cpu": "md-cpu_64_bit", "ram": "md-memory", "temp": "md-thermometer", "disk": "md-harddisk",
+  "net_down": "md-arrow_down", "net_up": "md-arrow_up",
+  "bell": "md-bell_outline", "bell_badge": "md-bell_badge_outline", "bell_off": "md-bell_off_outline",
+  "music": "md-music", "play": "md-play", "pause": "md-pause", "next": "md-skip_next", "prev": "md-skip_previous",
+  "spotify": "md-spotify", "firefox": "md-firefox", "chrome": "md-google_chrome",
+  "expand": "md-chevron_left", "collapse": "md-chevron_right",
+  "control": "md-tune_variant", "night": "md-weather_night", "brightness": "md-brightness_6",
+  "pp_saver": "md-leaf", "pp_balanced": "md-scale_balance", "pp_perf": "md-rocket_launch",
+  "power": "md-power", "logout": "md-logout", "reboot": "md-restart", "lockscreen": "md-lock_outline",
+  "refresh": "md-refresh", "settings": "md-cog_outline", "close": "md-close", "check": "md-check",
+  "eye": "md-eye_outline", "eye_off": "md-eye_off_outline", "clear": "md-notification_clear_all",
+  "clock": "md-clock_outline", "calendar": "md-calendar_month_outline", "dnd": "md-minus_circle_outline"
+}

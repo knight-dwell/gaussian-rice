@@ -1,0 +1,67 @@
+;; ─── Variables ────────────────────────────────────────────────────────────────
+;; Listeners are event-driven (no polling). defpolls only run while their popup
+;; is open (:run-while). CPU/RAM/temp/battery/net come from eww's built-in
+;; EWW_* magic variables.
+
+(defvar S "~/.config/eww/scripts")
+
+;; live state (one process each; eww owns their lifecycle)
+(deflisten workspaces :initial "[]"
+  "~/.config/eww/scripts/workspaces/workspaces-listen.py")
+(deflisten volume :initial '{"ready":false,"level":0,"muted":true,"sink":""}'
+  "~/.config/eww/scripts/audio/volume-listen.sh")
+(deflisten music :initial '{"player":"","status":"Stopped","title":"","artist":"","art":"","source":"music"}'
+  "~/.config/eww/scripts/music/music-listen.sh")
+(deflisten net :initial '{"state":"disconnected","ssid":"","signal":0,"level":0,"ip":"","device":"","radio":true,"ethernet":{"present":false,"connected":false,"device":"","ip":""},"vpn":[],"running":true}'
+  "~/.config/eww/scripts/network/network.py listen")
+(deflisten bt :initial '{"available":false,"powered":false,"connected":[],"count":0}'
+  "~/.config/eww/scripts/bluetooth/bluetooth.py listen")
+(deflisten notif :initial '{"count":0,"paused":false,"waiting":0}'
+  "~/.config/eww/scripts/notifications/notifications.py listen")
+(deflisten rem :initial '{"by_date":{},"upcoming":[],"today":0,"count":0}'
+  "~/.config/eww/scripts/calendar/reminders.py listen")
+(deflisten popup_watch :initial ""
+  "~/.config/eww/scripts/popup/popup-watch.py")
+
+;; UI state
+(defvar expanded false)        ; collapsible system-details section
+(defvar qs_open false)
+(defvar net_open false)
+(defvar bt_open false)
+(defvar notif_open false)
+(defvar cal_open false)
+(defvar cal_sel "")            ; selected day YYYY-MM-DD (popup.sh sets today on open)
+(defvar cal_label "")          ; "Thursday, 12 November"
+(defvar cal_d 1)               ; calendar position on open (today)
+(defvar cal_m 1)
+(defvar cal_y 2026)
+(defvar rem_msg "")            ; result of the last "add reminder"
+(defvar rem_clear "")          ; changes after a reminder is added: empties the input fields
+(defvar power_confirm "")      ; power action waiting for its confirming 2nd click
+(defvar pw_key "")             ; Wi-Fi network (key) whose password field is shown
+(defvar pw_visible false)      ; show/hide password
+(defvar net_msg "")            ; result of the last connect attempt
+(defvar net_busy "")           ; network action in progress: disconnect | rescan | <key>
+(defvar bt_busy "")            ; bluetooth action in progress: power | <MAC>
+(defvar B "~/.config/eww/scripts/bg.sh")   ; detach slow click actions (eww kills them after 200 ms)
+
+;; popup lists: plain vars, filled by popup.sh (instantly, from cache) and then
+;; by scripts/popup/refresh.sh while the popup is open, ONLY when they change.
+;; (A defpoll would push every few seconds and eww rebuilds every row of a
+;; (for ...) on each push, which flickers and swallows clicks.)
+(defvar wifi_list "[]")
+(defvar vpn_list "[]")
+(defvar bt_devices "[]")
+(defvar notif_history "[]")
+;; quick-settings values: cheap scalars, polled only while the popup is open
+(defpoll brightness :interval "3s" :run-while qs_open :initial "50"
+  "~/.config/eww/scripts/quicksettings/brightness.sh get")
+(defpoll pprofile :interval "4s" :run-while qs_open :initial "balanced"
+  "~/.config/eww/scripts/quicksettings/powerprofile.sh get")
+(defpoll nightlight :interval "4s" :run-while qs_open :initial "off"
+  "~/.config/eww/scripts/quicksettings/nightlight.sh status")
+(defpoll mic :interval "4s" :run-while qs_open :initial "on"
+  "~/.config/eww/scripts/quicksettings/mic.sh status")
+;; network speed for the details section (only while it is expanded)
+(defpoll netspeed :interval "2s" :run-while expanded :initial '{"down":0,"up":0}'
+  "~/.config/eww/scripts/system/netspeed.sh")

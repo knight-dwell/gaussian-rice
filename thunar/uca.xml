@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Open Terminal Here</name>
+	<submenu></submenu>
+	<unique-id>1733147226510194-1</unique-id>
+	<command>exo-open --working-directory %f --launch TerminalEmulator</command>
+	<description>Example for a custom action</description>
+	<range></range>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<directories/>
+</action>
+<action>
+	<icon>preferences-desktop-wallpaper</icon>
+	<name>Set as wallpaper</name>
+	<submenu></submenu>
+	<unique-id>rice-set-wallpaper-1</unique-id>
+	<command>/home/dark_knight/.local/bin/wallpaper-picker --set %f</command>
+	<description>Desktop + lock screen (and theme colors, if the theme follows the wallpaper)</description>
+	<range>1-1</range>
+	<patterns>*.jpg;*.jpeg;*.png;*.webp;*.JPG;*.JPEG;*.PNG;*.WEBP</patterns>
+	<image-files/>
+</action>
+<action>
+	<icon>edit-copy</icon>
+	<name>Copy path</name>
+	<submenu></submenu>
+	<unique-id>rice-copy-path-1</unique-id>
+	<command>/home/dark_knight/.local/bin/rice-copy-path %F</command>
+	<description>Copy the full path to the clipboard</description>
+	<range>*</range>
+	<patterns>*</patterns>
+	<directories/>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+</actions>

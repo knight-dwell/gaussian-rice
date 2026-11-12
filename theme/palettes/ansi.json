@@ -1,0 +1,11 @@
+{
+  "_comment": "Terminal ANSI colors (fixed, readable on any dark surface). Background/foreground come from the Material palette.",
+  "ansi0": "#2b2d33", "ansi8": "#5c5f69",
+  "ansi1": "#ef6f6c", "ansi9": "#ff8a87",
+  "ansi2": "#7fc98f", "ansi10": "#9ee2ab",
+  "ansi3": "#e6c07b", "ansi11": "#f2d49b",
+  "ansi4": "#6fa8f5", "ansi12": "#92bdf8",
+  "ansi5": "#c58af9", "ansi13": "#d6a8fb",
+  "ansi6": "#5cc8c8", "ansi14": "#82dada",
+  "ansi7": "#c9cbd3", "ansi15": "#eceef4"
+}

@@ -1,0 +1,62 @@
+## Gauss and the sum of 1 to 100
+As the story goes, a schoolteacher kept his class busy by making them add every number from 1 to 100. Young Carl Friedrich Gauss handed in his slate almost at once with 5050: he had paired 1 with 100, 2 with 99 and so on, 50 pairs of 101. The tale has grown with retelling, but the trick is now taught to every student.
+%
+## Ramanujan and the taxi 1729
+Visiting the ill Srinivasa Ramanujan, G. H. Hardy remarked that his taxi's number, 1729, seemed rather dull. "No," Ramanujan replied, "it is a very interesting number; it is the smallest number expressible as the sum of two cubes in two different ways": 1³ + 12³ = 9³ + 10³. Such numbers are now called taxicab numbers.
+%
+## Emmy Noether's theorem
+In 1915 Emmy Noether proved that every continuous symmetry of a physical system comes with a conserved quantity: time symmetry gives energy, space symmetry gives momentum. Göttingen's faculty resisted hiring a woman; David Hilbert reportedly snapped that a university is "not a bathhouse". Einstein later called her the most significant creative mathematical genius since higher education opened to women.
+%
+## Galois' last night
+Évariste Galois died at 20 after a duel in 1832. The night before, he wrote a long letter to a friend summarising his ideas on when polynomial equations can be solved by radicals. Those pages became the seed of group theory, one of the central ideas of modern mathematics.
+%
+## Newton's plague years
+When the Great Plague closed Cambridge in 1665, Isaac Newton went home to Woolsthorpe. In roughly eighteen months he developed the beginnings of calculus, experimented with light and prisms, and started thinking about gravitation. He later called it the prime of his age for invention.
+%
+## Einstein's miracle year
+In 1905, while working as a patent clerk in Bern, Albert Einstein published four papers: light quanta (the photoelectric effect, which won him the Nobel Prize), Brownian motion, special relativity, and E = mc². He was 26 and did it in his spare time.
+%
+## Marie Curie's two Nobels
+Marie Curie shared the 1903 Nobel Prize in Physics for research on radioactivity, and in 1911 won the Chemistry prize alone for discovering polonium and radium. She is still the only person to win Nobel Prizes in two different sciences. Her notebooks are radioactive to this day.
+%
+## Archimedes in the bath
+According to Vitruvius, King Hiero asked Archimedes whether his crown was pure gold. Stepping into a bath, Archimedes noticed the water rise, realised he could measure the crown's volume by the water it displaced, and ran home shouting "Eureka!" ("I have found it!"). The details are legend; the physics is real.
+%
+## Diogenes and Alexander
+Alexander the Great found the philosopher Diogenes lying in the sun and offered him anything he wished. "Stand a little out of my sun," Diogenes replied. Alexander is said to have answered that if he were not Alexander, he would wish to be Diogenes.
+%
+## Euler in the dark
+Leonhard Euler lost the sight of one eye in his thirties and became almost totally blind by 1771. His output barely slowed: with a phenomenal memory he dictated papers to assistants, and a large part of his enormous body of work was produced after his sight failed.
+%
+## Fermat's margin
+Around 1637 Pierre de Fermat wrote in the margin of his copy of Diophantus that xⁿ + yⁿ = zⁿ has no whole-number solutions for n > 2, adding that he had a truly marvellous proof which the margin was too narrow to contain. Andrew Wiles finally proved it in 1994, after seven years of secret work and one famous gap that took another year to fix.
+%
+## Heisenberg on Heligoland
+In June 1925, suffering from severe hay fever, 23-year-old Werner Heisenberg retreated to the treeless island of Heligoland. Working late into the night, he found the rules that became matrix mechanics, the first complete formulation of quantum mechanics.
+%
+## Schrödinger's Christmas holiday
+Over the Christmas holidays of 1925, in the Alpine resort of Arosa, Erwin Schrödinger worked out the wave equation that bears his name. Published in 1926, it became the everyday tool of quantum mechanics. And yes, the |ψ⟩ in your prompt is his wavefunction.
+%
+## Dirac predicts antimatter
+In 1928 Paul Dirac combined quantum mechanics with special relativity. His equation stubbornly allowed electrons with negative energy, which he eventually interpreted as a new particle with positive charge. In 1932 Carl Anderson found the positron in cosmic rays: antimatter, predicted from pure mathematics.
+%
+## The Grothendieck prime
+Alexander Grothendieck, one of the most abstract mathematicians who ever lived, was once asked in a lecture to consider a particular prime number. "You mean an actual number?" he asked. "All right, take 57." 57 = 3 × 19 has been known as the Grothendieck prime ever since.
+%
+## Nobel medals dissolved in acid
+When Nazi troops entered Copenhagen in 1940, the chemist George de Hevesy dissolved the gold Nobel medals of Max von Laue and James Franck in aqua regia at Niels Bohr's institute, so they could not be seized. The jar sat on a shelf through the war. Afterwards the gold was recovered and the Nobel Foundation recast the medals.
+%
+## Chandrasekhar's voyage
+In 1930, on the ship from India to England, 19-year-old Subrahmanyan Chandrasekhar calculated that a white dwarf star above about 1.4 solar masses cannot support itself and must collapse. The idea was mocked by Arthur Eddington, but the Chandrasekhar limit stood, and in 1983 it earned him the Nobel Prize.
+%
+## Wittgenstein in the trenches
+Ludwig Wittgenstein wrote much of the "Tractatus Logico-Philosophicus" while serving as a soldier in the Austro-Hungarian army in the First World War, carrying the notebooks with him. He finished it in 1918 and, convinced he had solved philosophy's problems, left philosophy to become a schoolteacher, for a while.
+%
+## Boltzmann's tombstone
+Ludwig Boltzmann's formula linking entropy to the number of microscopic arrangements, S = k log W, is carved on his tombstone in Vienna's Zentralfriedhof. Its ideas were fiercely disputed in his lifetime; today it is a cornerstone of statistical physics.
+%
+## Hilbert's 23 problems
+At the 1900 International Congress of Mathematicians in Paris, David Hilbert presented a list of unsolved problems (23 in the published version) to guide the new century. Some are solved, some proved unsolvable, and the Riemann hypothesis, number 8, is still open.
+%
+## Gauss's Gaussian
+The bell curve that now carries Carl Friedrich Gauss's name came out of his 1809 work on predicting planetary orbits from imperfect observations. He used it to justify the method of least squares, the same idea behind nearly every curve fit you will ever run.

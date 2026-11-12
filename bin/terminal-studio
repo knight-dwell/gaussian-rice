@@ -1,0 +1,3 @@
+#!/bin/sh
+# Terminal Studio: GUI for kitty look, prompt and startup art (~/.local/share/rice-apps)
+exec python3 "$HOME/.local/share/rice-apps/terminal-studio.py" "$@"

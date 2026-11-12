@@ -1,0 +1,18 @@
+{
+ "font_family": "JetBrainsMono Nerd Font",
+ "font_size": 13.5,
+ "cell_height": 100,
+ "opacity": 0.9,
+ "padding": 14,
+ "cursor_shape": "block",
+ "cursor_blink": true,
+ "scheme": "",
+ "bg": "",
+ "fg": "",
+ "fetch": true,
+ "logo": "~/.config/terminal-greeter/art/batsignal.txt",
+ "prompt": "ket",
+ "name": "gaussian_knight",
+ "sysinfo": true,
+ "quotes": true
+}

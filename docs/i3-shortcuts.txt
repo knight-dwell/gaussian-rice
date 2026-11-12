@@ -1,0 +1,117 @@
+i3 shortcuts (101 bindings, 26 new). Generated from the running config.
+
+── Apps & launchers
+   Super+Enter         Terminal (kitty)
+   Super+Shift+D       Run a program
+   Super+D             App launcher
+   Super+Space         Run a shell command (rofi)
+   Alt+P               Kill picom (compositor)
+   Alt+Ctrl+X          xkill: click a window to force-close it
+   Alt+Shift+P         Start polybar (old bar; the eww bar replaces it)
+   Alt+Ctrl+F          Screenshot → file + clipboard
+   Alt+Ctrl+S          Screenshot (select region) → clipboard
+   Alt+M               Music player (Elisa)
+   Alt+T               Files (Thunar)
+   Alt+D               Files: Downloads
+   Alt+Shift+W         Wi-Fi menu (rofi)
+   Super+Shift+S       Screenshot tool (select area, annotate)
+   Super+V             Clipboard history   [new]
+   Super+T             Dropdown terminal (show / hide)   [new]
+   Super+Tab           Window switcher   [new]
+   Super+Shift+W       Wallpaper picker   [new]
+   Super+G             gaussian_keep (notes, planner, journal, reminders, git)   [new]
+   Super+M             System monitor   [new]
+   Super+O             Dock: collapse / expand   [new]
+   PrtSc               Screenshot tool (select area, annotate)   [new]
+
+── Bar & popups
+   Super+A             Quick settings   [new]
+   Super+N             Network popup   [new]
+   Super+Shift+N       Notifications   [new]
+   Super+C             Calendar & reminders   [new]
+   Super+B             Bar: show / hide system details   [new]
+   Super+X             Power menu (lock, suspend, reboot …)   [new]
+   Super+F1            This cheat sheet   [new]
+   Super+/             This cheat sheet   [new]
+
+── Workspaces
+   Alt+Tab             Previous workspace
+   Super+1             Go to workspace 1
+   Super+2             Go to workspace 2
+   Super+3             Go to workspace 3
+   Super+4             Go to workspace 4
+   Super+5             Go to workspace 5
+   Super+6             Go to workspace 6
+   Super+7             Go to workspace 7
+   Super+8             Go to workspace 8
+   Super+9             Go to workspace 9
+   Super+0             Go to workspace 10
+   Super+Shift+1       Move window to workspace 1
+   Super+Shift+2       Move window to workspace 2
+   Super+Shift+3       Move window to workspace 3
+   Super+Shift+4       Move window to workspace 4
+   Super+Shift+5       Move window to workspace 5
+   Super+Shift+6       Move window to workspace 6
+   Super+Shift+7       Move window to workspace 7
+   Super+Shift+8       Move window to workspace 8
+   Super+Shift+9       Move window to workspace 9
+   Super+Shift+0       Move window to workspace 10
+
+── Windows & layout
+   Super+Q             Close window
+   Super+H             Focus left
+   Super+J             Focus down
+   Super+K             Focus up
+   Super+L             Focus right
+   Super+Left          Focus left
+   Super+Down          Focus down
+   Super+Up            Focus up
+   Super+Right         Focus right
+   Super+Shift+H       Move window left
+   Super+Shift+J       Move window down
+   Super+Shift+K       Move window up
+   Super+Shift+L       Move window right
+   Super+Shift+Left    Move window left
+   Super+Shift+Down    Move window down
+   Super+Shift+Up      Move window up
+   Super+Shift+Right   Move window right
+   Super+Shift+B       Next window: split horizontally
+   Super+Shift+V       Next window: split vertically
+   Super+F             Fullscreen
+   Super+S             Layout: stacked
+   Super+W             Layout: tabbed
+   Super+E             Layout: toggle split
+   Super+Shift+Space   Float / tile (floating shrinks smoothly)
+   Super+R             Resize mode (h/j/k/l, Esc to leave)
+
+── Media, volume, brightness
+   Mute key            Mute speakers
+   Mic-mute key        Mute microphone
+   Alt+Plus            Volume up
+   Alt+Minus           Volume down
+   Alt+]               Brightness up
+   Alt+[               Brightness down
+   Play                Play / pause music   [new]
+   Pause               Play / pause music   [new]
+   Next track key      Next track   [new]
+   Prev track key      Previous track   [new]
+   Vol+ key            Volume up   [new]
+   Vol- key            Volume down   [new]
+   Bright+ key         Brightness up   [new]
+   Bright- key         Brightness down   [new]
+
+── Session
+   Super+Shift+C       Reload i3 config
+   Super+Shift+R       Restart i3 (keeps windows)
+   Super+Shift+E       Exit i3 / log out (asks first)
+   Alt+Ctrl+Enter      Lock screen (old pixelated lock)
+   Super+Esc           Lock screen   [new]
+   Super+`             Lock screen   [new]
+
+── Resize mode (after Super+R)
+   H                   Resize: shrink width
+   J                   Resize: grow height
+   K                   Resize: shrink height
+   L                   Resize: grow width
+   Esc                 Leave this mode
+

@@ -1,0 +1,13 @@
+{
+  "_comment": "Bar icon + label per workspace number (1-10). 'icon' is a Nerd Font glyph name (https://www.nerdfonts.com/cheat-sheet). The i3 workspace names come from 'set $wsN' in ~/.config/i3/config. Run ~/.config/eww/scripts/gen-icons.py after editing.",
+  "1":  {"icon": "oct-book",        "label": "notes"},
+  "2":  {"icon": "md-music",        "label": "music"},
+  "3":  {"icon": "fa-folder_o",     "label": "files"},
+  "4":  {"icon": "oct-north_star",  "label": "misc"},
+  "5":  {"icon": "md-snowflake",    "label": "misc"},
+  "6":  {"icon": "fa-snowflake_o",  "label": "misc"},
+  "7":  {"icon": "md-minecraft",    "label": "games"},
+  "8":  {"icon": "md-firefox",      "label": "browser"},
+  "9":  {"icon": "fa-code",         "label": "code"},
+  "10": {"icon": "fa-terminal",     "label": "terminal"}
+}

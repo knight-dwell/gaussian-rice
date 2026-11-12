@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# rice-power-menu: rofi power menu (Super+X). Lock and Suspend act at once;
+# Log out / Reboot / Shut down ask "are you sure?" first.
+choice=$(printf '%s\n' "󰌾  Lock" "󰤄  Suspend" "󰍃  Log out" "󰜉  Reboot" "󰐥  Shut down" |
+  rofi -dmenu -i -p "Power" -theme-str 'window { width: 360px; } listview { lines: 5; }') || exit 0
+confirm() {
+  [[ $(printf '%s\n' "No, cancel" "Yes, $1" | rofi -dmenu -i -p "$1?" \
+        -theme-str 'window { width: 360px; } listview { lines: 2; }') == "Yes, $1" ]]
+}
+case "$choice" in
+  *Lock)      exec ~/.config/lockscreen/lock.sh ;;
+  *Suspend)   exec systemctl suspend ;;           # xss-lock locks first
+  *"Log out") confirm "log out"   && exec i3-msg exit ;;
+  *Reboot)    confirm "reboot"    && exec systemctl reboot ;;
+  *"Shut down") confirm "shut down" && exec systemctl poweroff ;;
+esac

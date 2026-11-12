@@ -1,0 +1,106 @@
+;; ─── System monitor ───────────────────────────────────────────────────────────
+;; A normal floating window (drag with Super + mouse, close with ✕ or Super+Q).
+;; Toggle: `rice-sysmon` (Super+M). Standalone eww config: eww -c ~/.config/rice-sysmon
+;; Data: scripts/sysmon/sysmon.py every 2 s, only while the window is open.
+
+(defvar sysmon_open false)
+(defpoll sysmon :interval "2s" :run-while sysmon_open
+  :initial '{"cpu":{"model":"","cores":0,"threads":0,"freq":0,"freq_max":0,"governor":"","load":["0","0","0"],"uptime":"","procs":0},"mem":{"total":0,"used":0,"avail":0,"cached":0,"perc":0,"swap_total":0,"swap_used":0,"swap_perc":0},"gpu":{"present":false,"busy":0,"vram_used":0,"vram_total":0,"vram_perc":0},"temps":[],"disks":[],"bat":{"present":false},"net":{"iface":"","down":0,"up":0},"procs":[]}'
+  "~/.config/rice-sysmon/sysmon.py")
+
+(defwindow sysmon
+  :monitor 0
+  :geometry (geometry :x "0px" :y "0px" :width "900px" :anchor "center")
+  :stacking "fg" :wm-ignore false :windowtype "normal" :focusable true :resizable false
+  (sysmon-w))
+
+(defwidget stat [label value ?sub]
+  (box :class "stat" :orientation "v" :space-evenly false
+    (label :class "stat-value" :xalign 0 :text value)
+    (label :class "stat-label" :xalign 0 :text label)
+    (label :class "stat-sub" :xalign 0 :visible {(sub ?: "") != ""} :text {sub ?: ""})))
+
+(defwidget meter [label value ?text ?cls]
+  (box :class "meter ${cls ?: ''}" :space-evenly false :spacing 8
+    (label :class "meter-label" :xalign 0 :text label)
+    (progress :class "meter-bar ${value >= 85 ? 'hot' : ''}" :hexpand true :valign "center" :value value)
+    (label :class "meter-text" :xalign 1 :text {text ?: "${round(value, 0)}%"})))
+
+(defwidget core-col [cores]
+  (box :orientation "v" :space-evenly false :spacing 4 :hexpand true
+    (for c in cores
+      (meter :label {replace(c.core, "cpu", "#")} :value {c.usage} :text "${c.usage}% ${round(c.freq / 1000, 1)}G"))))
+
+(defwidget sysmon-w []
+  (box :class "sysmon" :orientation "v" :space-evenly false :spacing 12
+    ;; header
+    (box :space-evenly false :spacing 10
+      (label :class "icon sm-icon" :text "󰻠")
+      (box :orientation "v" :space-evenly false :hexpand true
+        (label :class "popup-title" :xalign 0 :text {sysmon.cpu.model ?: "System monitor"})
+        (label :class "hint" :xalign 0
+               :text "${sysmon.cpu.cores} cores · ${sysmon.cpu.threads} threads · up ${sysmon.cpu.uptime} · ${sysmon.cpu.procs} processes"))
+      (button :class "icon-btn flat" :tooltip "Close" :onclick "setsid -f ~/.config/rice-sysmon/toggle.sh close"
+        (label :class "icon" :text "󰅖")))
+
+    ;; top stats
+    (box :class "stats" :spacing 8
+      (stat :label "CPU" :value "${round(EWW_CPU.avg, 0)}%" :sub "${sysmon.cpu.freq} / ${sysmon.cpu.freq_max} GHz")
+      (stat :label "Memory" :value "${sysmon.mem.used} GB" :sub "of ${sysmon.mem.total} GB · ${sysmon.mem.perc}%")
+      (stat :label "Load (1/5/15 min)" :value "${sysmon.cpu.load[0]}" :sub "${sysmon.cpu.load[1]} · ${sysmon.cpu.load[2]}")
+      (stat :label "Network ${sysmon.net.iface}" :value "↓ ${sysmon.net.down} K/s" :sub "↑ ${sysmon.net.up} K/s"))
+
+    ;; graphs
+    (box :spacing 8
+      (box :class "card graph-card" :orientation "v" :space-evenly false
+        (label :class "section" :xalign 0 :text "CPU · last 60 s")
+        (graph :class "graph cpu-graph" :height 60 :value {EWW_CPU.avg} :time-range "60s" :min 0 :max 100 :dynamic false :thickness 2))
+      (box :class "card graph-card" :orientation "v" :space-evenly false
+        (label :class "section" :xalign 0 :text "Memory · last 60 s")
+        (graph :class "graph mem-graph" :height 60 :value {EWW_RAM.used_mem_perc} :time-range "60s" :min 0 :max 100 :dynamic false :thickness 2)))
+
+    (box :spacing 8
+      ;; left column: per-thread usage + top processes
+      (box :orientation "v" :space-evenly false :spacing 8 :hexpand true
+        (box :class "card" :orientation "v" :space-evenly false :spacing 4
+          (label :class "section" :xalign 0 :text "Per thread · governor ${sysmon.cpu.governor}")
+          (box :spacing 12
+            (core-col :cores {jq(EWW_CPU.cores, '.[:((length + 1) / 2 | floor)]')})
+            (core-col :cores {jq(EWW_CPU.cores, '.[((length + 1) / 2 | floor):]')})))
+        (box :class "card" :orientation "v" :space-evenly false :spacing 2
+          (box :class "proc proc-head" :space-evenly false
+            (label :class "p-name" :xalign 0 :hexpand true :text "Top processes")
+            (label :class "p-num" :xalign 1 :text "PID")
+            (label :class "p-num" :xalign 1 :text "CPU")
+            (label :class "p-num" :xalign 1 :text "RAM"))
+          (for p in {sysmon.procs}
+            (box :class "proc" :space-evenly false
+              (label :class "p-name" :xalign 0 :hexpand true :limit-width 30 :text {p.name})
+              (label :class "p-num dim" :xalign 1 :text {p.pid})
+              (label :class "p-num" :xalign 1 :text "${p.cpu}%")
+              (label :class "p-num dim" :xalign 1 :text "${p.mem}M")))))
+      ;; right column: memory, gpu, disks, temperatures, battery
+      (box :orientation "v" :space-evenly false :spacing 8 :hexpand true
+        (box :class "card" :orientation "v" :space-evenly false :spacing 4
+          (label :class "section" :xalign 0 :text "Memory")
+          (meter :label "RAM" :value {sysmon.mem.perc} :text "${sysmon.mem.used}/${sysmon.mem.total}G")
+          (meter :label "Swap" :value {sysmon.mem.swap_perc} :text "${sysmon.mem.swap_used}/${sysmon.mem.swap_total}G")
+          (label :class "hint" :xalign 0 :text "available ${sysmon.mem.avail} GB · cache ${sysmon.mem.cached} GB"))
+        (box :class "card" :orientation "v" :space-evenly false :spacing 4 :visible {sysmon.gpu.present}
+          (label :class "section" :xalign 0 :text "GPU (integrated)")
+          (meter :label "Busy" :value {sysmon.gpu.busy})
+          (meter :label "VRAM" :value {sysmon.gpu.vram_perc} :text "${sysmon.gpu.vram_used}/${sysmon.gpu.vram_total}G"))
+        (box :class "card" :orientation "v" :space-evenly false :spacing 4
+          (label :class "section" :xalign 0 :text "Disks")
+          (for d in {sysmon.disks}
+            (meter :label {d.mount} :value {d.perc} :text "${d.used}/${d.total}G")))
+        (box :class "card" :orientation "v" :space-evenly false :spacing 4
+          (label :class "section" :xalign 0 :text "Temperatures")
+          (box :space-evenly false :spacing 6
+            (for t in {sysmon.temps}
+              (label :class "chip temp ${t.hot ? 'hot' : ''}" :text "${t.name} ${t.value}°"))))
+        (box :class "card" :orientation "v" :space-evenly false :spacing 4 :visible {sysmon.bat.present ?: false}
+          (label :class "section" :xalign 0 :text "Battery")
+          (meter :label "Charge" :value {sysmon.bat.capacity ?: 0}
+                 :text "${sysmon.bat.capacity ?: 0}% ${sysmon.bat.status ?: ''}")
+          (label :class "hint" :xalign 0 :text "health ${sysmon.bat.health ?: 0}% · draw ${sysmon.bat.power ?: 0} W"))))))

@@ -1,0 +1,68 @@
+# ~/.config/dunst/dunstrc: notifications matching the eww bar.
+# Layout lives here; colors, font and radius come from the central theme via
+# dunstrc.d/50-theme.conf -> ~/.config/theme/generated/dunst-colors.conf
+# (loaded after this file, so it overrides). Reload: dunstctl reload
+# The system default (/etc/xdg/dunst/dunstrc) is not used once this exists.
+
+[global]
+    monitor = 0
+    follow = none
+    origin = top-right
+    # 9px = window gap, 56px = below the bar
+    offset = (9, 56)
+    width = (280, 380)
+    height = (0, 220)
+    notification_limit = 5
+    gap_size = 8
+    padding = 12
+    horizontal_padding = 16
+    text_icon_padding = 12
+    frame_width = 1
+    separator_height = 0
+    sort = yes
+    idle_threshold = 120
+
+    progress_bar = true
+    progress_bar_height = 8
+    progress_bar_frame_width = 0
+    progress_bar_min_width = 150
+    progress_bar_max_width = 340
+
+    markup = full
+    format = "<b>%s</b>\n%b"
+    alignment = left
+    vertical_alignment = center
+    show_age_threshold = 60
+    ellipsize = middle
+    ignore_newline = no
+    stack_duplicates = true
+    hide_duplicate_count = false
+    show_indicators = yes
+
+    enable_recursive_icon_lookup = true
+    icon_theme = Papirus-Dark, Adwaita
+    icon_position = left
+    min_icon_size = 32
+    max_icon_size = 48
+
+    sticky_history = yes
+    history_length = 50
+    dmenu = /usr/bin/rofi -dmenu -p dunst
+    browser = /usr/bin/xdg-open
+    always_run_script = true
+    title = Dunst
+    class = Dunst
+    ignore_dbusclose = false
+
+    mouse_left_click = close_current
+    mouse_middle_click = do_action, close_current
+    mouse_right_click = close_all
+
+[urgency_low]
+    timeout = 5
+
+[urgency_normal]
+    timeout = 8
+
+[urgency_critical]
+    timeout = 0

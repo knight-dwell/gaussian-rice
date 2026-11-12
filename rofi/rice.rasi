@@ -1,0 +1,47 @@
+/* ~/.config/rofi/rice.rasi: rofi in the same style as the eww popups.
+   Colors/font/radius come from the central theme (regenerated with it). */
+@import "~/.config/theme/generated/rofi-colors.rasi"
+
+* {
+  font:             @th-font;
+  background-color: transparent;
+  text-color:       @th-fg;
+  margin: 0; padding: 0; spacing: 0;
+}
+
+window {
+  location: center; anchor: center;
+  width: 640px;
+  padding: @th-space-lg;
+  background-color: @th-bg;
+  border: 2px; border-color: @th-outline; border-radius: @th-radius;
+}
+
+mainbox  { spacing: @th-space-md; children: [ inputbar, message, listview ]; }
+
+inputbar {
+  children: [ prompt, entry ];
+  spacing: @th-space-sm;
+  padding: 10px 16px;
+  background-color: @th-bg-input;
+  border-radius: 22px;
+}
+prompt   { text-color: @th-accent; }
+entry    { placeholder: "Type to search…"; placeholder-color: @th-fg-alt; cursor: text; }
+
+message  { padding: 8px 12px; background-color: @th-bg-alt; border-radius: 10px; }
+textbox  { text-color: @th-fg-alt; }
+
+listview { lines: 8; columns: 1; spacing: 4px; fixed-height: false; scrollbar: false; }
+element  { padding: 8px 12px; spacing: 12px; border-radius: 10px; cursor: pointer; }
+element normal.normal, element alternate.normal { text-color: @th-fg; }
+element normal.active, element alternate.active { text-color: @th-accent; }
+element normal.urgent, element alternate.urgent { text-color: @th-urgent; }
+element selected.normal { background-color: @th-selected; text-color: @th-on-selected; }
+element selected.active { background-color: @th-selected; text-color: @th-accent; }
+element selected.urgent { background-color: @th-urgent; text-color: @th-bg; }
+element-icon { size: 24px; cursor: inherit; }
+element-text { vertical-align: 0.5; text-color: inherit; cursor: inherit; }
+
+/* rofi -e (error/info boxes, e.g. your Super+Space command runner output) */
+error-message { padding: @th-space-md; background-color: @th-bg; border: 2px; border-color: @th-outline; border-radius: @th-radius; }

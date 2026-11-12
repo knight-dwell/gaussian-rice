@@ -1,0 +1,3 @@
+#!/bin/sh
+# toggle the system monitor window (~/.config/rice-sysmon)
+exec "$HOME/.config/rice-sysmon/toggle.sh" "${1:-toggle}"

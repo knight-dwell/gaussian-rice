@@ -1,0 +1,337 @@
+set $mod Mod4
+
+# font JetBrainsMono Nerd Font 11
+font pango:FiraCode Nerd Font 11px
+
+exec --no-startup-id dex --autostart --environment i3
+
+# exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock-fancy
+
+# Use pactl to adjust volume in PulseAudio.
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# use pactl to set volume
+bindsym Mod1+plus exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym Mod1+minus exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
+
+# use brightnesctl to set brightness
+bindsym Mod1 + bracketright exec brightnessctl s +5%
+bindsym Mod1 + bracketleft exec brightnessctl s 5%-
+
+# Use Mouse+$mod to drag floating windows to their wanted position
+floating_modifier $mod
+
+# start a terminal
+bindsym $mod+Return exec kitty
+
+# kill focused window
+bindsym $mod+q kill
+
+# rofi
+bindsym $mod+Shift+d exec rofi -show run 
+bindsym $mod+d exec rofi -show drun 
+bindsym $mod+space exec --no-startup-id $HOME/scripts/command_exec_rofi.sh
+
+# change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# split in horizontal orientation
+bindsym $mod+Shift+b split h
+
+bindsym Mod1+Tab workspace back_and_forth
+
+# split in vertical orientation
+bindsym $mod+Shift+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# change focus between tiling / floating windows
+#bindsym $mod+space focus mode_toggle
+
+# focus the parent container
+# bindsym $mod+a focus parent
+
+# start spotify
+# bindsym Mod1+Ctrl+y spotify
+
+# focus the child container
+#bindsym $mod+d focus child
+
+# Border settings
+default_border pixel 4
+default_floating_border pixel 4
+
+# class                 border  backgr. text    indicator child_border
+# client.focused          #70946B #70946B #ffffff #70946B #70946B
+# client.focused_inactive #70946B #70946B #ffffff #70946B #70946B
+# client.unfocused        #70946B #70946B #888888 #70946B #70946B
+# client.urgent           #70946B #70946B #ffffff #70946B #70946B
+# client.placeholder      #70946B #70946B #ffffff #70946B #70946B
+
+# client.background       #ffffff
+# [rice] border colors from the central theme (blue; kitty gets its red border in Phase 4)
+include ~/.config/theme/generated/i3-colors.conf
+
+
+# Define names for default workspaces for which we configure key bindings later on.
+# We use variables to avoid repeating the names in multiple places.
+set $ws1 " "
+set $ws2 "󰝚 "
+set $ws3 " "
+set $ws4 " "
+set $ws5 "󰜗 "
+set $ws6 " "
+set $ws7 "󰍳 "
+set $ws8 "󰈹 "
+set $ws9 " "
+set $ws10 " "
+
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $ws10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $ws10
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+# exit i3 (logs you out of your X session)
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        # These bindings trigger as soon as you enter the resize mode
+
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
+
+        # back to normal: Enter or Escape or $mod+r
+        bindsym Escape mode "default"
+}
+
+# resize windows
+bindsym $mod+r mode "resize"
+
+# launch nitrogen and restore previous wallpaper
+exec_always nitrogen --restore
+
+# launch the xfce4-power-manager at startup
+exec --no-startup-id xfce4-power-manager
+
+# launch picom
+exec_always picom
+
+# # launch network manager
+# exec_always nm-applet
+
+# lock the screen whenever i3 loads
+# [rice] was exec_always, which re-locked on every i3 reload/restart; now only at login
+# exec_always ~/scripts/lock.sh
+# exec --no-startup-id ~/scripts/lock.sh
+# [rice] Phase 5: login lock uses the new lock screen
+exec --no-startup-id ~/.config/lockscreen/lock.sh
+
+# kill picom
+bindsym Mod1+p exec "pkill picom"
+
+
+# launch xkill
+bindsym --release Mod1+Ctrl+x exec xkill
+
+# launch the operating system without text editor
+# bindsym Mod1+e exec "cd ~/hause/significant\ things/ && emacs"
+
+# restart polybar
+# bindsym Mod1+Shift+p exec --no-startup-id /bin/bash ~/.config/polybar/material/scripts/pywal.sh ~/hause/significant things/wallpapers/ && /bin/bash ~/.config/polybar/launch.sh --material
+# bindsym Mod1+Shift+p exec --no-startup-id /bin/bash ~/.config/polybar/material/launch.sh
+bindsym Mod1+Shift+p exec --no-startup-id /bin/bash ~/.config/polybar/launch.sh --forest
+
+# gaps
+gaps inner 6
+gaps outer 3
+# [rice] room for the eww bar (8px margin + 40px bar + 2px) since it reserves no strut
+# gaps top 6
+gaps top 50
+
+# lock the screen
+bindsym Mod1+Ctrl+Return exec ~/scripts/lock.sh
+
+# take screenshot
+bindsym Mod1+Ctrl+f exec "~/scripts/screenie_and_xclip.sh"
+
+# select region and take screenshot
+bindsym Mod1+Ctrl+s exec "~/scripts/screenie_and_xclip_clipboard.sh"
+
+# launch elisa
+bindsym Mod1+m exec dbus-launch --exit-with-session elisa
+
+# open thunar
+bindsym Mod1+t exec thunar
+bindsym Mod1+d exec thunar ~/Downloads
+# bindsym Mod1+s exec thunar ~/hause/significant\ things
+# bindsym Mod1+b exec thunar ~/hause/significant\ things/books
+
+# network-manager rofi
+bindsym Mod1+Shift+w exec ~/rofi-wifi-menu/rofi-wifi-menu.sh
+#disabling i3-specific suspend handeling
+#exec --no-startup-id systemctl suspend
+
+#screenshot alias
+bindsym $mod+Shift+S exec flameshot gui 
+
+
+#launch polybar
+# [rice] replaced by the eww bar (see "[rice] additions" at the end); config kept in ~/.config/polybar
+# exec --no-startup-id /bin/bash ~/.config/polybar/launch.sh --forest
+
+
+# HDMI setup
+# set $laptop eDP
+# set $hdmi HDMI-A-0
+
+# workspace 1 output $laptop
+# workspace 2 output $laptop
+# workspace 3 output $laptop
+
+# workspace 4 output $hdmi
+# workspace 5 output $hdmi
+# workspace 6 output $hdmi
+
+# ── [rice] additions ─────────────────────────────────────────────────────────
+# Shrink + center a window when you float it by hand (Super+Shift+Space);
+# picom animates the resize. Settings at the top of the script.
+exec_always --no-startup-id python3 ~/.config/i3/scripts/float-shrink.py
+exec_always --no-startup-id python3 ~/.config/i3/scripts/border-random.py
+
+# eww bar (replaces polybar). launch.sh kills the old daemon + listeners first,
+# so restarts never duplicate the bar.
+exec_always --no-startup-id ~/.config/eww/scripts/launch.sh
+
+# eww popups: floating, borderless, on every workspace
+for_window [title="^Eww - (quicksettings|network|bluetooth|notifications|calendar)$"] floating enable, border none, sticky enable
+# While a popup is open: Escape closes it (popup.sh switches i3 into this mode)
+# mode "eww-popup" {
+#         bindsym Escape exec --no-startup-id ~/.config/eww/scripts/popup/popup.sh close
+# }
+# [rice] Phase 8: the popup mode is generated, so every shortcut keeps working
+# while a popup is open (regenerate after editing bindings:
+#   ~/.config/i3/scripts/gen-popup-mode.py && i3-msg reload)
+include ~/.config/i3/popup-mode.conf
+
+# [rice] Phase 4: rice apps float (Terminal Studio, its file pickers)
+for_window [class="TerminalStudio"] floating enable, resize set 840 px 580 px, move position center
+for_window [class="RiceDockDialog"] floating enable, move position center
+# Rice Dock: floating launcher, on every workspace, no border (drag it by its grip)
+for_window [class="RiceDock"] floating enable, sticky enable, border none
+exec --no-startup-id ~/.local/bin/rice-dock
+# system monitor (eww window): floating, centered; drag with Super + mouse
+for_window [title="^Eww - sysmon$"] floating enable, move position center
+
+# ── [rice] Phase 5: lock screen (settings: ~/.config/lockscreen/lock.conf) ──
+# Super+Escape locks (Super+L stays "focus right"). Alt+Ctrl+Return still runs
+# the old ~/scripts/lock.sh, unchanged.
+# --release: start after the keys are let go (a held Super key blocks the
+# locker from grabbing the keyboard, and it would quit silently)
+bindsym --release $mod+Escape exec --no-startup-id ~/.config/lockscreen/lock.sh
+# the URX Core75 keyboard sends Super+grave (`) when Win+Esc is pressed
+# (its Esc key doubles as `~), so bind that too: Win+Esc locks on both keyboards
+bindsym --release $mod+grave exec --no-startup-id ~/.config/lockscreen/lock.sh
+# auto-lock after idle + before suspend (xss-lock), screen off later
+exec_always --no-startup-id ~/.config/lockscreen/idle.sh
+
+
+# ── [rice] Phase 6: polish ──────────────────────────────────────────────────
+# autotiling: alternate split direction automatically (off: touch ~/.config/i3/autotiling.off)
+exec_always --no-startup-id python3 ~/.config/i3/scripts/autotiling.py
+# clipboard history daemon (picker: Super+V)
+exec_always --no-startup-id ~/.local/bin/rice-clip daemon
+bindsym $mod+v exec --no-startup-id ~/.local/bin/rice-clip pick
+# dropdown terminal in the scratchpad (Super+T shows/hides, keeps its contents)
+for_window [class="^dropdown$"] floating enable, resize set 80 ppt 45 ppt, move scratchpad, scratchpad show, move position 10 ppt 56 px
+bindsym $mod+t exec --no-startup-id ~/.config/i3/scripts/dropdown.sh
+# window switcher
+bindsym $mod+Tab exec --no-startup-id rofi -show window
+# night light: re-apply the mode chosen in quick settings (off/auto/on)
+exec --no-startup-id ~/.config/eww/scripts/quicksettings/nightlight.sh restore
+# battery-low / CPU-temperature notifications (thresholds: ~/.config/rice-alerts/alerts.conf)
+exec_always --no-startup-id ~/.local/bin/rice-alerts
+
+# ── [rice] Phase 8: new shortcuts (add-only; every key here was unused) ─────
+# bar popups
+bindsym $mod+a exec --no-startup-id ~/.config/eww/scripts/popup/popup.sh toggle quicksettings
+bindsym $mod+n exec --no-startup-id ~/.config/eww/scripts/popup/popup.sh toggle network
+bindsym $mod+Shift+n exec --no-startup-id ~/.config/eww/scripts/popup/popup.sh toggle notifications
+bindsym $mod+c exec --no-startup-id ~/.config/eww/scripts/popup/popup.sh toggle calendar
+bindsym $mod+b exec --no-startup-id ~/.config/eww/scripts/bar/toggle-details.sh
+# tools
+bindsym $mod+Shift+w exec --no-startup-id ~/.local/bin/wallpaper-picker
+bindsym $mod+g exec --no-startup-id ~/.local/bin/gaussian-keep
+bindsym $mod+x exec --no-startup-id ~/.local/bin/rice-power-menu
+bindsym $mod+m exec --no-startup-id ~/.local/bin/rice-sysmon
+bindsym $mod+o exec --no-startup-id ~/.local/bin/rice-dock
+bindsym Print exec --no-startup-id flameshot gui
+# cheat sheet (generated from this config)
+bindsym $mod+F1 exec --no-startup-id ~/.local/bin/rice-keys
+bindsym $mod+slash exec --no-startup-id ~/.local/bin/rice-keys
+# media + hardware keys
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+bindsym XF86AudioPause exec --no-startup-id playerctl play-pause
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/eww/scripts/audio/volume.sh up
+bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/eww/scripts/audio/volume.sh down
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl -q set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl -q set 5%-

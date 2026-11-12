@@ -1,0 +1,61 @@
+A mathematician is a device for turning coffee into theorems.
+— Alfréd Rényi (usually credited to his friend Paul Erdős)
+%
+I think I can safely say that nobody understands quantum mechanics.
+— Richard Feynman, "The Character of Physical Law" (1964)
+%
+Young man, in mathematics you don't understand things. You just get used to them.
+— John von Neumann
+%
+Shut up and calculate!
+— N. David Mermin (1989), often wrongly credited to Feynman
+%
+I was taught at school never to start a sentence without knowing the end of it.
+— Paul Dirac, explaining why he spoke so little
+%
+Prediction is very difficult, especially about the future.
+— attributed to Niels Bohr (probably an old Danish saying)
+%
+An expert is a person who has made all the mistakes that can be made in a very narrow field.
+— Niels Bohr (attributed by Edward Teller)
+%
+Heisenberg gets pulled over. "Do you know how fast you were going?"
+"No," he says, "but I know exactly where I am."
+— physics folklore
+%
+Schrödinger's cat walks into a bar.
+And doesn't.
+— physics folklore
+%
+A neutron walks into a bar and asks for a drink. "How much?"
+"For you," says the bartender, "no charge."
+— physics folklore
+%
+An engineer, a physicist and a mathematician see one black sheep from a train in Scotland.
+Engineer: "Scottish sheep are black." Physicist: "Some Scottish sheep are black."
+Mathematician: "There is at least one sheep in Scotland, at least one side of which is black."
+— old joke
+%
+There are 10 kinds of people in the world: those who understand binary, and those who don't.
+— programmer folklore
+%
+Old mathematicians never die. They just lose some of their functions.
+— maths folklore
+%
+∫ 1/cabin d(cabin) = log cabin + C
+… which, near the sea, is a houseboat.
+— calculus folklore
+%
+The difference between theory and practice is larger in practice than in theory.
+— often credited to Jan L. A. van de Snepscheut
+%
+A bra walks up to a ket. ⟨φ|ψ⟩
+Finally, someone who completes them.
+— Dirac notation folklore
+%
+Never trust an atom. They make up everything.
+— chemistry folklore
+%
+"What's the integral of e^x?"  "e^x."  "And the derivative?"  "Still e^x."
+e^x has never once changed for anybody.
+— calculus folklore

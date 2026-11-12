@@ -1,0 +1,150 @@
+;; ─── Bar ──────────────────────────────────────────────────────────────────────
+;; Override-redirect window (:wm-ignore true) so i3 doesn't stretch it; i3's
+;; "gaps top" keeps windows clear of it. Width = 1920 - 2 * 9px window gaps.
+
+(defwindow bar
+  :monitor 0
+  :geometry (geometry :x "0px" :y "8px" :width "1902px" :height "40px" :anchor "top center")
+  :stacking "fg"
+  :wm-ignore true
+  :windowtype "dock"
+  (bar))
+
+(defwidget bar []
+  (centerbox :class "bar"
+    (box :halign "start" :space-evenly false :spacing 6
+      (workspaces-w)
+      (music-w)
+      (label :visible false :text popup_watch))   ; keeps the popup/fullscreen watcher running
+    (box :halign "center" (clock))
+    (box :halign "end" :space-evenly false :spacing 6
+      (sys-details)
+      (expand-btn)
+      (box :class "pill group" :space-evenly false :spacing 2
+        (volume-w) (network-w) (bt-w) (battery-w))
+      (cpu-ram)
+      (bell-w)
+      (cc-btn))))
+
+;; Workspaces 1-10 (icons/labels: ~/.config/eww/workspaces.json)
+(defwidget workspaces-w []
+  (eventbox :onscroll "[ {} = up ] && i3-msg -q workspace prev_on_output || i3-msg -q workspace next_on_output"
+    (box :class "pill workspaces" :space-evenly false :spacing 2
+      (for ws in workspaces
+        (button :class "ws ${ws.focused ? 'focused' : ''} ${ws.occupied ? 'occupied' : ''} ${ws.urgent ? 'urgent' : ''}"
+                :tooltip "${ws.n} · ${ws.label}"
+                :onclick "${B} ${S}/workspaces/goto.sh ${ws.n}"
+          (label :text "${ws.icon}"))))))
+
+;; Clock: click = calendar + reminders popup. A badge shows today's pending reminders.
+(defwidget clock []
+  (button :class "pill clock ${cal_open ? 'active' : ''}"
+          :onclick "${B} ${S}/popup/popup.sh toggle calendar"
+          :tooltip {rem.today > 0 ? "${rem.today} reminder${rem.today == 1 ? '' : 's'} today" : "Calendar & reminders"}
+    (box :space-evenly false :spacing 10
+      (label :class "date" :text {formattime(EWW_TIME, "%a %d %b")})
+      (label :class "time" :text {formattime(EWW_TIME, "%H:%M")})
+      (box :class "rem-badge" :visible {rem.today > 0} :space-evenly false :spacing 3
+        (label :class "icon" :text {ic.bell})
+        (label :text {rem.today})))))
+
+;; Music: click = play/pause, scroll = next/previous. Equalizer animates while playing.
+(defwidget music-w []
+  (eventbox :visible {music.player != ""}
+            :onclick "${B} ${S}/music/music.sh toggle ${music.player}"
+            :onscroll "[ {} = up ] && ${B} ${S}/music/music.sh next ${music.player} || ${B} ${S}/music/music.sh prev ${music.player}"
+            :tooltip "${music.player} · ${music.status}"
+    (box :class "pill music ${music.status == 'Playing' ? 'playing' : 'paused'}" :space-evenly false :spacing 8
+      (box :class "eq" :space-evenly false :spacing 2 :valign "center"
+        (box :class "eq-bar b1" :valign "end")
+        (box :class "eq-bar b2" :valign "end")
+        (box :class "eq-bar b3" :valign "end")
+        (box :class "eq-bar b4" :valign "end"))
+      (label :class "icon src"
+             :text {music.source == "spotify" ? ic.spotify : music.source == "firefox" ? ic.firefox : music.source == "chrome" ? ic.chrome : ic.music})
+      (label :class "title" :limit-width 32
+             :text "${music.artist}${music.artist != '' ? ' – ' : ''}${music.title}"))))
+
+;; Collapsible system details (toggle with the chevron)
+(defwidget sys-details []
+  (revealer :reveal expanded :transition "slideleft" :duration "350ms"
+    (box :class "pill details" :space-evenly false :spacing 14
+      (box :space-evenly false :spacing 5 :tooltip "CPU temperature"
+        (label :class "icon" :text {ic.temp})
+        (label :text "${round(EWW_TEMPS?.K10TEMP_TCTL ?: 0, 0)}°C"))
+      (box :space-evenly false :spacing 5 :tooltip "Download / upload (${net.device})"
+        (label :class "icon" :text {ic.net_down})
+        (label :text "${netspeed.down}K")
+        (label :class "icon" :text {ic.net_up})
+        (label :text "${netspeed.up}K"))
+      (box :space-evenly false :spacing 5 :tooltip "RAM used / total"
+        (label :class "icon" :text {ic.ram})
+        (label :text "${round(EWW_RAM.used_mem / 1073741824, 1)}/${round(EWW_RAM.total_mem / 1073741824, 0)}G"))
+      (box :space-evenly false :spacing 5 :tooltip "Disk / (used)"
+        (label :class "icon" :text {ic.disk})
+        (label :text "${round(EWW_DISK['/'].used_perc, 0)}%")))))
+
+(defwidget expand-btn []
+  (button :class "pill icon-btn" :tooltip {expanded ? "Hide details" : "Show details"}
+          :onclick "eww update expanded=${!expanded}"
+    (label :class "icon" :text {expanded ? ic.collapse : ic.expand})))
+
+;; Volume: click = mute, scroll = ±5%, right click = pavucontrol
+(defwidget volume-w []
+  (eventbox :onclick "${S}/audio/volume.sh mute"
+            :onrightclick "${B} pavucontrol"
+            :onscroll "[ {} = up ] && ${S}/audio/volume.sh up || ${S}/audio/volume.sh down"
+            :tooltip {volume.ready ? "${volume.sink}: ${volume.level}%${volume.muted ? ' (muted)' : ''}" : "Waiting for audio server…"}
+    (box :class "item ${volume.muted ? 'muted' : ''}" :space-evenly false :spacing 5
+      (label :class "icon"
+             :text {!volume.ready || volume.muted ? ic.vol_mute : volume.level > 66 ? ic.vol_high : volume.level > 33 ? ic.vol_med : ic.vol_low})
+      (label :text {volume.ready ? "${volume.level}%" : "–"}))))
+
+(defwidget network-w []
+  (button :class "item ${net.state == 'disconnected' ? 'off' : ''}"
+          :onclick "${B} ${S}/popup/popup.sh toggle network"
+          :tooltip {net.state == "wifi" ? "${net.ssid} · ${net.signal}% · ${net.ip}" : net.state == "ethernet" ? "Ethernet · ${net.ip}" : net.radio ? "Disconnected" : "Wi-Fi off"}
+    (box :space-evenly false :spacing 5
+      (label :class "icon"
+             :text {net.state == "ethernet" ? ic.ethernet : net.state == "wifi" ? ic_wifi[net.level] : net.radio ? ic.net_off : ic.wifi_off})
+      (label :limit-width 12 :visible {net.state == "wifi"} :text {net.ssid})
+      (label :class "icon" :visible {arraylength(net.vpn) > 0} :text {ic.vpn}))))
+
+(defwidget bt-w []
+  (button :class "item ${bt.powered ? '' : 'off'}"
+          :onclick "${B} ${S}/popup/popup.sh toggle bluetooth"
+          :tooltip {!bt.powered ? "Bluetooth off" : bt.count > 0 ? "Connected: ${bt.connected[0]}" : "Bluetooth on"}
+    (box :space-evenly false :spacing 5
+      (label :class "icon" :text {!bt.powered ? ic.bt_off : bt.count > 0 ? ic.bt_conn : ic.bt})
+      (label :limit-width 10 :visible {bt.count > 0} :text {bt.connected[0] ?: ""}))))
+
+(defwidget battery-w []
+  (box :class "item battery ${EWW_BATTERY.BAT0.capacity <= 15 && EWW_BATTERY.BAT0.status != 'Charging' ? 'low' : ''}"
+       :space-evenly false :spacing 5
+       :tooltip "${EWW_BATTERY.BAT0.status} · ${EWW_BATTERY.BAT0.capacity}%"
+    (label :class "icon"
+           :text {EWW_BATTERY.BAT0.status == "Charging" ? ic.bat_charging : ic_bat[round(EWW_BATTERY.BAT0.capacity / 10, 0)]})
+    (label :text "${EWW_BATTERY.BAT0.capacity}%")))
+
+(defwidget cpu-ram []
+  (button :class "pill icon-btn sysmon-btn" :tooltip "System monitor"
+          :onclick "${B} ${S}/sysmon/toggle.sh"
+  (box :space-evenly false :spacing 10
+    (box :space-evenly false :spacing 5 :tooltip "CPU"
+      (label :class "icon" :text {ic.cpu})
+      (label :text "${round(EWW_CPU.avg, 0)}%"))
+    (box :space-evenly false :spacing 5 :tooltip "RAM"
+      (label :class "icon" :text {ic.ram})
+      (label :text "${round(EWW_RAM.used_mem_perc, 0)}%")))))
+
+(defwidget bell-w []
+  (button :class "pill icon-btn bell ${notif.paused ? 'dnd' : ''}"
+          :onclick "${B} ${S}/popup/popup.sh toggle notifications"
+          :tooltip {notif.paused ? "Do not disturb" : "${notif.count} notifications"}
+    (label :class "icon" :text {notif.paused ? ic.bell_off : notif.count > 0 ? ic.bell_badge : ic.bell})))
+
+(defwidget cc-btn []
+  (button :class "pill icon-btn cc ${qs_open ? 'active' : ''}"
+          :onclick "${B} ${S}/popup/popup.sh toggle quicksettings"
+          :tooltip "Quick settings"
+    (label :class "icon" :text {ic.control})))

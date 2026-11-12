@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# rice-copy-path FILE...: put the full path(s) on the clipboard, one per line
+# (Thunar right-click → "Copy path"). Shows up in the clipboard history too.
+(( $# )) || exit 0
+printf '%s\n' "$@" | sed '$ s/\n$//' | head -c -1 | xclip -selection clipboard -i
+notify-send -a Thunar -i edit-copy "Path copied" "$(printf '%s\n' "$@" | head -3)$( (( $# > 3 )) && echo "
+… and $(( $# - 3 )) more")"

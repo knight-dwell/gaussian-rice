@@ -1,0 +1,295 @@
+;; ─── Popups ───────────────────────────────────────────────────────────────────
+;; Managed (i3 floats them via for_window rules) so they can take keyboard
+;; focus (Wi-Fi password). Closed by Esc (i3 mode eww-popup), by focusing
+;; another window (popup-watch.py), or by clicking the bar icon again.
+;;
+;; Rules for click handlers:
+;;  * eww kills a click command after 200 ms, so anything slower is started
+;;    through ${B} (scripts/bg.sh), which detaches it and returns at once.
+;;  * Never put names from the outside world (SSIDs, device names) into a
+;;    command string: eww pastes them raw into sh. Use keys/MACs instead.
+
+(defwidget popup-header [title]
+  (box :class "popup-header" :space-evenly false
+    (label :class "popup-title" :hexpand true :xalign 0 :text title)
+    (children)
+    (button :class "icon-btn flat" :tooltip "Close (Esc)" :onclick "${B} ${S}/popup/popup.sh close"
+      (label :class "icon" :text {ic.close}))))
+
+;; Material toggle switch (GTK's own toggle widgets don't style well)
+(defwidget switch [on onclick ?tooltip ?busy]
+  (button :class "switch ${on ? 'on' : ''} ${(busy ?: false) ? 'busy' : ''}" :onclick onclick
+          :tooltip {tooltip ?: ""} :valign "center"
+    (box :class "track"
+      (box :class "knob" :halign {on ? "end" : "start"} :hexpand true))))
+
+;; ── Quick settings ──────────────────────────────────────────────────────────
+(defwindow quicksettings
+  :monitor 0
+  :geometry (geometry :x "9px" :y "56px" :width "380px" :anchor "top right")
+  :stacking "fg" :wm-ignore false :windowtype "dialog" :focusable true :resizable false
+  (quicksettings))
+
+(defwidget tile [icon title subtitle active onclick ?tooltip]
+  (button :class "tile ${active ? 'on' : ''}" :onclick onclick :tooltip {tooltip ?: title}
+    (box :space-evenly false :spacing 10
+      (label :class "icon tile-icon" :text icon)
+      (box :orientation "v" :space-evenly false :valign "center"
+        (label :class "tile-title" :xalign 0 :limit-width 14 :text title)
+        (label :class "tile-sub" :xalign 0 :limit-width 16 :text subtitle)))))
+
+(defwidget slider-row [icon value onchange ?onclick]
+  (box :class "slider-row" :space-evenly false :spacing 10
+    (button :class "icon-btn flat" :onclick {onclick ?: ""} (label :class "icon" :text icon))
+    (scale :class "slider" :hexpand true :min 0 :max 101 :value value :onchange onchange)
+    (label :class "slider-val" :text "${round(value, 0)}%")))
+
+(defwidget quicksettings []
+  (box :class "popup qs" :orientation "v" :space-evenly false :spacing 14
+    (popup-header :title {formattime(EWW_TIME, "%A, %d %B")}
+      (label :class "qs-time" :text {formattime(EWW_TIME, "%H:%M")}))
+    (box :class "tiles" :orientation "v" :space-evenly false :spacing 8
+      (box :spacing 8
+        (tile :icon {net.radio ? ic_wifi[net.level] : ic.wifi_off}
+              :title "Wi-Fi" :subtitle {net.state == "wifi" ? net.ssid : net.radio ? "On" : "Off"}
+              :active {net.radio}
+              :onclick "${B} ${S}/network/act.sh wifi-toggle"
+              :tooltip "Toggle Wi-Fi (details: network icon in the bar)")
+        (tile :icon {bt.powered ? ic.bt : ic.bt_off}
+              :title "Bluetooth" :subtitle {!bt.powered ? "Off" : bt.count > 0 ? bt.connected[0] : "On"}
+              :active {bt.powered}
+              :onclick "${B} ${S}/bluetooth/act.sh power"))
+      (box :spacing 8
+        (tile :icon {ic.night} :title "Night light"
+              :subtitle {nightlight == "auto" ? "Auto · dusk–dawn" : nightlight == "on" ? "On" : "Off"}
+              :tooltip "Click: Off → Auto (evening schedule) → On"
+              :active {nightlight != "off"}
+              :onclick "${B} ${S}/quicksettings/nightlight.sh toggle")
+        (tile :icon {pprofile == "power-saver" ? ic.pp_saver : pprofile == "performance" ? ic.pp_perf : ic.pp_balanced}
+              :title "Power" :subtitle {pprofile}
+              :active {pprofile != "balanced"}
+              :onclick "${B} ${S}/quicksettings/powerprofile.sh cycle"))
+      (box :spacing 8
+        (tile :icon {notif.paused ? ic.bell_off : ic.bell} :title "Do not disturb"
+              :subtitle {notif.paused ? "On" : "Off"} :active {notif.paused}
+              :onclick "${B} dunstctl set-paused toggle")
+        (tile :icon {ic.music} :title "Microphone" :subtitle {mic == "muted" ? "Muted" : "On"}
+              :active {mic == "muted"}
+              :onclick "${B} ${S}/quicksettings/mic.sh toggle")))
+    (box :class "card" :orientation "v" :space-evenly false :spacing 6
+      (slider-row :icon {volume.muted ? ic.vol_mute : ic.vol_high} :value {volume.level}
+                  :onchange "${B} ${S}/audio/volume.sh set {}" :onclick "${B} ${S}/audio/volume.sh mute")
+      (slider-row :icon {ic.brightness} :value brightness
+                  :onchange "eww update brightness={}; ${B} ${S}/quicksettings/brightness.sh set {}"))
+    (box :class "card media" :visible {music.player != ""} :space-evenly false :spacing 12
+      (box :class "art" :style {music.art != "" ? "background-image: url('${music.art}');" : ""}
+        (label :class "icon art-fallback" :visible {music.art == ""} :text {ic.music}))
+      (box :orientation "v" :space-evenly false :hexpand true :valign "center" :spacing 2
+        (label :class "media-title" :xalign 0 :limit-width 26 :text {music.title})
+        (label :class "media-artist" :xalign 0 :limit-width 30 :text {music.artist != "" ? music.artist : music.player})
+        (box :class "media-controls" :halign "start" :space-evenly false :spacing 4
+          (button :class "icon-btn" :onclick "${B} ${S}/music/music.sh prev ${music.player}"
+            (label :class "icon" :text {ic.prev}))
+          (button :class "icon-btn primary" :onclick "${B} ${S}/music/music.sh toggle ${music.player}"
+            (label :class "icon" :text {music.status == "Playing" ? ic.pause : ic.play}))
+          (button :class "icon-btn" :onclick "${B} ${S}/music/music.sh next ${music.player}"
+            (label :class "icon" :text {ic.next})))))
+    (box :class "power-row" :spacing 8
+      (power-btn :action "lock" :icon {ic.lockscreen} :label "Lock")
+      (power-btn :action "logout" :icon {ic.logout} :label "Log out")
+      (power-btn :action "reboot" :icon {ic.reboot} :label "Reboot")
+      (power-btn :action "shutdown" :icon {ic.power} :label "Power off"))
+    (label :class "hint" :visible {power_confirm != "" && power_confirm != "lock"}
+           :text "Click again to confirm")))
+
+;; lock runs at once; the others need a confirming second click
+(defwidget power-btn [action icon label]
+  (button :class "power-btn ${power_confirm == action ? 'confirm' : ''}" :tooltip label
+          :onclick {action == "lock" || power_confirm == action ? "${B} ${S}/system/power.sh ${action}" : "eww update power_confirm=${action}"}
+    (label :class "icon" :text icon)))
+
+;; ── Network ─────────────────────────────────────────────────────────────────
+(defwindow network
+  :monitor 0
+  :geometry (geometry :x "9px" :y "56px" :width "400px" :anchor "top right")
+  :stacking "fg" :wm-ignore false :windowtype "dialog" :focusable true :resizable false
+  (network-popup))
+
+(defwidget network-popup []
+  (box :class "popup net" :orientation "v" :space-evenly false :spacing 12
+    (popup-header :title "Network"
+      (button :class "icon-btn flat ${net_busy == 'rescan' ? 'busy' : ''}" :tooltip "Rescan"
+              :onclick "${B} ${S}/network/act.sh rescan"
+        (label :class "icon" :text {ic.refresh}))
+      (switch :on {net.radio} :tooltip "Wi-Fi on/off" :onclick "${B} ${S}/network/act.sh wifi-toggle"))
+    (box :class "card current" :visible {net.state != "disconnected"} :space-evenly false :spacing 12
+      (label :class "icon big" :text {net.state == "ethernet" ? ic.ethernet : ic_wifi[net.level]})
+      (box :orientation "v" :space-evenly false :hexpand true
+        (label :class "media-title" :xalign 0 :limit-width 24 :text {net.state == "ethernet" ? "Ethernet" : net.ssid})
+        (label :class "media-artist" :xalign 0
+               :text {net.state == "wifi" ? "${net.signal}% · ${net.ip}" : net.ip}))
+      (button :class "chip ${net_busy == 'disconnect' ? 'busy' : ''}" :visible {net.state == "wifi"}
+              :onclick "${B} ${S}/network/act.sh disconnect"
+              {net_busy == "disconnect" ? "Disconnecting…" : "Disconnect"}))
+    (box :class "card" :visible {net.ethernet.present && net.state != "ethernet"} :space-evenly false :spacing 10
+      (label :class "icon" :text {ic.ethernet})
+      (label :xalign 0 :text {net.ethernet.connected ? "Ethernet connected · ${net.ethernet.ip}" : "Ethernet unplugged"}))
+    (label :class "section" :xalign 0 :visible {net.radio} :text "Available networks")
+    (label :class "hint" :xalign 0 :visible {!net.radio} :text "Wi-Fi is off")
+    (label :class "hint" :xalign 0 :visible {net.radio && arraylength(wifi_list) == 0} :text "Scanning…")
+    (scroll :class "netlist" :vscroll true :hscroll false :height 300 :visible {net.radio && arraylength(wifi_list) > 0}
+      (box :orientation "v" :space-evenly false :spacing 4
+        (for n in wifi_list
+          (box :orientation "v" :space-evenly false
+            (button :class "net-row ${n.active ? 'active' : ''} ${net_busy == n.key ? 'busy' : ''}"
+                    :onclick {n.active || net_busy != "" ? "" : n.saved || !n.secure ? "${B} ${S}/network/act.sh connect ${n.key}" : "eww update pw_key=${n.key} pw_visible=false net_msg=''"}
+              (box :space-evenly false :spacing 10
+                (label :class "icon" :text {ic_wifi[n.level]})
+                (label :hexpand true :xalign 0 :limit-width 26 :text {n.ssid})
+                (label :class "tag" :visible {net_busy == n.key} :text "connecting…")
+                (label :class "tag" :visible {n.saved && !n.active && net_busy != n.key} :text "saved")
+                (label :class "tag on" :visible {n.active} :text "connected")
+                (label :class "icon dim" :visible {n.secure} :text {ic.lock})))
+            (box :class "pw-row" :visible {pw_key == n.key} :space-evenly false :spacing 6
+              (input :class "pw" :hexpand true :password {!pw_visible}
+                     :onchange "${S}/network/pwstore.sh <<'__EWW_PW_END__'
+{}
+__EWW_PW_END__"
+                     :onaccept "${B} ${S}/network/act.sh connect ${n.key}")
+              (button :class "icon-btn flat" :tooltip "Show/hide" :onclick "eww update pw_visible=${!pw_visible}"
+                (label :class "icon" :text {pw_visible ? ic.eye_off : ic.eye}))
+              (button :class "chip primary" :onclick "${B} ${S}/network/act.sh connect ${n.key}" "Connect"))))))
+    (label :class "hint" :xalign 0 :visible {net_msg != ""} :limit-width 50 :text net_msg)
+    (box :orientation "v" :space-evenly false :spacing 4 :visible {arraylength(vpn_list) > 0}
+      (label :class "section" :xalign 0 :text "VPN")
+      (for v in vpn_list
+        (box :class "net-row" :space-evenly false :spacing 10
+          (label :class "icon" :text {ic.vpn})
+          (label :hexpand true :xalign 0 :limit-width 26 :text {v.name})
+          (switch :on {v.active} :busy {net_busy == v.key}
+                  :onclick "${B} ${S}/network/act.sh vpn ${v.key} ${v.active ? 'down' : 'up'}"))))
+    (button :class "chip wide" :onclick "${B} ${S}/popup/popup.sh close; ${B} nm-connection-editor"
+      (box :space-evenly false :spacing 8 :halign "center"
+        (label :class "icon" :text {ic.settings}) (label :text "More settings")))))
+
+;; ── Bluetooth ───────────────────────────────────────────────────────────────
+(defwindow bluetooth
+  :monitor 0
+  :geometry (geometry :x "9px" :y "56px" :width "360px" :anchor "top right")
+  :stacking "fg" :wm-ignore false :windowtype "dialog" :focusable true :resizable false
+  (bluetooth-popup))
+
+(defwidget bluetooth-popup []
+  (box :class "popup bt" :orientation "v" :space-evenly false :spacing 12
+    (popup-header :title "Bluetooth"
+      (switch :on {bt.powered} :busy {bt_busy == "power"} :tooltip "Power"
+              :onclick "${B} ${S}/bluetooth/act.sh power"))
+    (label :class "hint" :xalign 0 :visible {!bt.available} :text "No Bluetooth controller")
+    (label :class "section" :xalign 0 :visible {bt.powered} :text "Paired devices")
+    (label :class "hint" :xalign 0 :visible {!bt.powered && bt.available}
+           :text {bt_busy == "power" ? "Turning on…" : "Bluetooth is off"})
+    (box :orientation "v" :space-evenly false :spacing 4 :visible {bt.powered}
+      (for d in bt_devices
+        (box :class "net-row ${d.connected ? 'active' : ''} ${bt_busy == d.mac ? 'busy' : ''}" :space-evenly false :spacing 10
+          (label :class "icon" :text {d.connected ? ic.bt_conn : ic.bt})
+          (box :orientation "v" :space-evenly false :hexpand true
+            (label :xalign 0 :limit-width 24 :text {d.name})
+            (label :class "tile-sub" :xalign 0 :visible {d.battery >= 0} :text "Battery ${d.battery}%"))
+          (button :class "chip ${d.connected ? '' : 'primary'}"
+                  :onclick {bt_busy != "" ? "" : "${B} ${S}/bluetooth/act.sh toggle ${d.mac}"}
+                  {bt_busy == d.mac ? (d.connected ? "Disconnecting…" : "Connecting…") : d.connected ? "Disconnect" : "Connect"}))))
+    (button :class "chip wide" :onclick "${B} ${S}/popup/popup.sh close; ${B} blueman-manager"
+      (box :space-evenly false :spacing 8 :halign "center"
+        (label :class "icon" :text {ic.settings}) (label :text "More settings")))))
+
+;; ── Notifications ───────────────────────────────────────────────────────────
+(defwindow notifications
+  :monitor 0
+  :geometry (geometry :x "9px" :y "56px" :width "380px" :anchor "top right")
+  :stacking "fg" :wm-ignore false :windowtype "dialog" :focusable true :resizable false
+  (notifications-popup))
+
+(defwidget notifications-popup []
+  (box :class "popup notif" :orientation "v" :space-evenly false :spacing 12
+    (popup-header :title "Notifications"
+      (button :class "icon-btn flat" :tooltip "Clear all"
+              :onclick "eww update notif_history='[]'; ${B} ${S}/notifications/notifications.py clear"
+        (label :class "icon" :text {ic.clear})))
+    (box :class "card" :space-evenly false :spacing 10
+      (label :class "icon" :text {notif.paused ? ic.bell_off : ic.bell})
+      (label :hexpand true :xalign 0 :text "Do not disturb")
+      (switch :on {notif.paused} :onclick "${B} dunstctl set-paused toggle"))
+    (label :class "hint" :visible {arraylength(notif_history) == 0} :text "No notifications")
+    (scroll :class "notiflist" :vscroll true :hscroll false :height 360 :visible {arraylength(notif_history) > 0}
+      (box :orientation "v" :space-evenly false :spacing 6
+        (for n in notif_history
+          (box :class "notif-card" :orientation "v" :space-evenly false :spacing 2
+            (box :space-evenly false
+              (label :class "notif-app" :hexpand true :xalign 0 :limit-width 30 :text {n.app})
+              (label :class "notif-age" :text {n.age}))
+            (label :class "notif-summary" :xalign 0 :wrap true :limit-width 120 :text {n.summary})
+            (label :class "notif-body" :xalign 0 :wrap true :limit-width 200 :visible {n.body != ""} :text {n.body})))))))
+
+;; ── Calendar + reminders ────────────────────────────────────────────────────
+;; Reminders live in ~/.local/share/reminders/reminders.json and pop up as
+;; notifications on time (scripts/calendar/reminders.py). Typed text reaches
+;; the scripts through store.sh (stdin), never through the command line.
+(defwindow calendar
+  :monitor 0
+  :geometry (geometry :x "0px" :y "56px" :width "440px" :anchor "top center")
+  :stacking "fg" :wm-ignore false :windowtype "dialog" :focusable true :resizable false
+  (calendar-popup))
+
+(defwidget calendar-popup []
+  (box :class "popup cal" :orientation "v" :space-evenly false :spacing 12
+    (box :space-evenly false
+      (box :orientation "v" :space-evenly false :hexpand true
+        (label :class "cal-time" :xalign 0 :text {formattime(EWW_TIME, "%H:%M")})
+        (label :class "hint" :xalign 0 :text {formattime(EWW_TIME, "%A, %d %B %Y")}))
+      (button :class "icon-btn flat" :valign "start" :tooltip "Close (Esc)" :onclick "${B} ${S}/popup/popup.sh close"
+        (label :class "icon" :text {ic.close})))
+    (box :class "card"
+      (calendar :class "cal-widget" :day cal_d :month cal_m :year cal_y :show-week-numbers false
+                :onclick "${B} ${S}/calendar/select.sh {0} {1} {2}"))
+    (box :space-evenly false
+      (label :class "section" :hexpand true :xalign 0 :text "Reminders · ${cal_label}")
+      (button :class "icon-btn flat" :tooltip "Remove finished reminders" :visible {rem.count > 0}
+              :onclick "${B} ${S}/calendar/act.sh clear-done"
+        (label :class "icon" :text {ic.clear})))
+    (box :orientation "v" :space-evenly false :spacing 4
+      (label :class "hint" :xalign 0
+             :visible {arraylength(jq(rem.by_date, '.["${cal_sel}"] // []')) == 0}
+             :text "Nothing on this day")
+      (for r in {jq(rem.by_date, '.["${cal_sel}"] // []')}
+        (box :class "rem-row ${r.past ? 'past' : ''}" :space-evenly false :spacing 10
+          (label :class "rem-time" :text {r.time})
+          (label :class "rem-text" :hexpand true :xalign 0 :wrap true :limit-width 60 :text {r.text})
+          (button :class "icon-btn flat" :tooltip "Delete" :onclick "${B} ${S}/calendar/act.sh delete ${r.id}"
+            (label :class "icon" :text {ic.close})))))
+    (box :class "card rem-add" :orientation "v" :space-evenly false :spacing 6
+      (label :class "section" :xalign 0 :text "New reminder on ${cal_label}")
+      (box :space-evenly false :spacing 6
+        (box :orientation "v" :space-evenly false :spacing 2
+          (label :class "field-label" :xalign 0 :text "Time")
+          (input :class "pw rem-time-in" :value {rem_clear == "x" ? "" : ""}
+                 :onchange "${S}/calendar/store.sh time <<'__EWW_REM_END__'
+{}
+__EWW_REM_END__"))
+        (box :orientation "v" :space-evenly false :spacing 2 :hexpand true
+          (label :class "field-label" :xalign 0 :text "Remind me to…")
+          (input :class "pw" :hexpand true :value {rem_clear == "x" ? "" : ""}
+                 :onchange "${S}/calendar/store.sh text <<'__EWW_REM_END__'
+{}
+__EWW_REM_END__"
+                 :onaccept "${B} ${S}/calendar/act.sh add ${cal_sel}")))
+      (box :space-evenly false
+        (label :class "hint" :hexpand true :xalign 0 :wrap true :limit-width 40
+               :text {rem_msg != "" ? rem_msg : "e.g. 14:30 or 2:30pm · Enter to save"})
+        (button :class "chip primary" :onclick "${B} ${S}/calendar/act.sh add ${cal_sel}" "Add")))
+    (box :orientation "v" :space-evenly false :spacing 4 :visible {arraylength(rem.upcoming) > 0}
+      (label :class "section" :xalign 0 :text "Upcoming")
+      (for r in {rem.upcoming}
+        (box :class "rem-row" :space-evenly false :spacing 10
+          (label :class "rem-date" :text {r.label})
+          (label :class "rem-time" :text {r.time})
+          (label :class "rem-text" :hexpand true :xalign 0 :limit-width 28 :text {r.text}))))))

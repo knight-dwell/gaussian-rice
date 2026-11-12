@@ -1,0 +1,3 @@
+#!/bin/sh
+# toggle the eww system monitor window
+exec "$HOME/.config/eww/scripts/sysmon/toggle.sh" "${1:-toggle}"

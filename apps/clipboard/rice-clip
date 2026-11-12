@@ -1,0 +1,3 @@
+#!/bin/sh
+# clipboard history (daemon | pick | clear): ~/.local/share/rice-apps/rice-clip.py
+exec python3 "$HOME/.local/share/rice-apps/rice-clip.py" "$@"

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Wallpaper Picker
+Comment=Choose desktop / lock screen wallpaper from ~/Pictures/Wallpapers
+Exec=wallpaper-picker
+Icon=preferences-desktop-wallpaper
+Categories=Settings;

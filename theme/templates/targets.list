@@ -1,0 +1,12 @@
+# template              output (rendered by apply-theme.sh)
+eww-colors.scss         ~/.config/theme/generated/eww-colors.scss
+kitty-colors.conf       ~/.config/theme/generated/kitty-colors.conf
+rofi-colors.rasi        ~/.config/theme/generated/rofi-colors.rasi
+dunst-colors.conf       ~/.config/theme/generated/dunst-colors.conf
+i3-colors.conf          ~/.config/theme/generated/i3-colors.conf
+tmux-colors.conf        ~/.config/theme/generated/tmux-colors.conf
+lock-colors.sh          ~/.config/theme/generated/lock-colors.sh
+gtk-colors.css          ~/.config/theme/generated/gtk-colors.css
+qt-colors.conf          ~/.config/theme/generated/qt-colors.conf
+border-terminal.glsl    ~/.config/theme/generated/border-terminal.glsl
+border-terminal-dim.glsl ~/.config/theme/generated/border-terminal-dim.glsl

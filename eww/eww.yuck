@@ -1,0 +1,13 @@
+;; ~/.config/eww/eww.yuck: Material bar for i3 (top, primary monitor)
+;;   yuck/vars.yuck    listeners + state
+;;   yuck/bar.yuck     the bar
+;;   yuck/popups.yuck  quick settings, network, bluetooth, notifications
+;; Colors/tokens: ~/.config/theme (run scripts/apply-theme.sh), imported by eww.scss
+;; Icons:         icons.json + workspaces.json -> scripts/gen-icons.py
+;; Start/restart: scripts/launch.sh (i3 runs it with exec_always)
+
+(include "./generated/icons.yuck")
+(include "./yuck/vars.yuck")
+(include "./yuck/bar.yuck")
+(include "./yuck/popups.yuck")
+(include "./yuck/sysmon.yuck")

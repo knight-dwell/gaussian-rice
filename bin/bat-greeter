@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+"""bat-greeter: what a new terminal shows. fastfetch (bat-signal logo + a
+"Welcome" line) followed by one random quote, joke or short story from
+~/.config/terminal-greeter/library/*.txt in a framed box.
+
+  bat-greeter            fastfetch + entry
+  bat-greeter --quote    only the entry (also handy as a command: `bat-greeter -q`)
+
+Settings: ~/.config/terminal-greeter/greeter.json (Terminal Studio edits it)
+  {"quotes": true, "fetch": true}
+"""
+import json
+import os
+import random
+import shutil
+import subprocess
+import sys
+import textwrap
+
+BASE = os.path.expanduser("~/.config/terminal-greeter")
+LIB = os.path.join(BASE, "library")
+RECENT = os.path.expanduser("~/.cache/terminal-greeter/recent.json")
+KEEP_RECENT = 25            # don't repeat any of the last N entries
+
+# ANSI: colors follow the terminal palette (blue/red/yellow from the theme)
+RESET, BOLD, DIM, ITALIC = "\033[0m", "\033[1m", "\033[2m", "\033[3m"
+BLUE, RED, YELLOW, GREY = "\033[34m", "\033[31m", "\033[33m", "\033[90m"
+KIND = {"quotes": ("❝", "quote", BLUE), "funny": ("☻", "for a smile", YELLOW), "stories": ("✦", "story", RED)}
+
+
+def settings():
+    s = {"quotes": True, "fetch": True}
+    try:
+        with open(os.path.join(BASE, "greeter.json")) as fh:
+            s.update(json.load(fh))
+    except (OSError, ValueError):
+        pass
+    return s
+
+
+def entries():
+    out = []
+    for name in sorted(os.listdir(LIB)) if os.path.isdir(LIB) else []:
+        if not name.endswith(".txt") or name == "README.txt":
+            continue
+        kind = name[:-4]
+        with open(os.path.join(LIB, name), encoding="utf-8") as fh:
+            for i, block in enumerate(fh.read().split("\n%\n")):
+                block = block.strip("\n")
+                if block.strip():
+                    out.append((f"{kind}:{i}", kind, block))
+    return out
+
+
+def pick(all_entries):
+    try:
+        recent = json.load(open(RECENT))
+    except (OSError, ValueError):
+        recent = []
+    fresh = [e for e in all_entries if e[0] not in recent] or all_entries
+    choice = random.choice(fresh)
+    recent = (recent + [choice[0]])[-KEEP_RECENT:]
+    try:
+        os.makedirs(os.path.dirname(RECENT), exist_ok=True)
+        json.dump(recent, open(RECENT, "w"))
+    except OSError:
+        pass
+    return choice
+
+
+def show(kind, block):
+    cols = shutil.get_terminal_size((80, 24)).columns
+    width = max(30, min(cols - 4, 76))          # box width incl. borders
+    inner = width - 4
+    icon, label, color = KIND.get(kind, ("•", kind, BLUE))
+    lines = block.split("\n")
+    title, author = "", ""
+    if lines[0].startswith("## "):
+        title, lines = lines[0][3:], lines[1:]
+    if lines and lines[-1].startswith("— "):
+        author, lines = lines[-1], lines[:-1]
+
+    head = f" {icon} {title or label} "
+    print(f"{GREY}╭─{RESET}{color}{BOLD}{head}{RESET}{GREY}{'─' * max(0, width - len(head) - 3)}╮{RESET}")
+    for para in lines:
+        for row in textwrap.wrap(para, inner) or [""]:
+            print(f"{GREY}│{RESET} {ITALIC}{row}{RESET}{' ' * (inner - len(row))} {GREY}│{RESET}")
+    if author:
+        for row in textwrap.wrap(author, inner):
+            print(f"{GREY}│{RESET} {' ' * (inner - len(row))}{YELLOW}{row}{RESET} {GREY}│{RESET}")
+    print(f"{GREY}╰{'─' * (width - 2)}╯{RESET}")
+
+
+ART = os.path.join(BASE, "art")
+FF_CONF = os.path.expanduser("~/.config/fastfetch/config.jsonc")
+
+
+def fetch(cols):
+    """fastfetch, laid out for the window width (the info column needs ~50
+    characters, the big logo ~42, the small one ~27)."""
+    try:
+        conf = open(FF_CONF, encoding="utf-8").read()
+    except OSError:
+        conf = ""
+    bat = "batsignal" in conf
+    small = os.path.join(ART, "batsignal-small.txt")
+    if cols >= 95:                      # big logo beside the info
+        args = []
+    elif cols >= 80:                    # small logo beside the info
+        args = ["--logo", small] if bat else ["--logo-type", "small"]
+    elif cols >= 52:                    # logo on top, info below
+        args = (["--logo", small] if bat else []) + ["--logo-position", "top"]
+    else:                               # too narrow for the info: logo + welcome only
+        if bat:
+            with open(small, encoding="utf-8") as fh:
+                print(YELLOW + fh.read().replace("$1", "").rstrip("\n") + RESET)
+        m = __import__("re").search(r"Welcome, \\u001b\[1;34m([^\"]*)", conf)
+        print(f"{YELLOW}{BOLD}🦇 Welcome, {BLUE}{m.group(1) if m else ''}{RESET}")
+        return
+    subprocess.run(["fastfetch", *args])
+
+
+def main():
+    s = settings()
+    only_quote = len(sys.argv) > 1 and sys.argv[1] in ("-q", "--quote")
+    if s["fetch"] and not only_quote and shutil.which("fastfetch"):
+        fetch(shutil.get_terminal_size((100, 24)).columns)
+    if s["quotes"] or only_quote:
+        all_entries = entries()
+        if all_entries:
+            _, kind, block = pick(all_entries)
+            show(kind, block)
+
+
+if __name__ == "__main__":
+    main()

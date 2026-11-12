@@ -1,0 +1,213 @@
+#!/usr/bin/env python3
+"""rice-keys: keyboard cheat sheet, generated from the RUNNING i3 config every
+time it opens (so it can never go stale). Super+F1 or Super+/.
+
+  rice-keys           searchable rofi popup (type to filter)
+  rice-keys --text    plain text (e.g. `rice-keys --text > keys.txt` to print)
+
+Bindings that did not exist before the rice (Phase 0 snapshot) are marked "new".
+Descriptions come from the command (table below); unknown commands fall back
+to the comment above the binding, then to the command itself.
+"""
+import os
+import re
+import subprocess
+import sys
+
+BASELINE = os.path.expanduser("~/.config-backups/2026-11-11_2137/meta/keybindings.txt")
+
+# (regex on the command, description); first match wins
+DESCRIBE = [
+    (r"^exec\b.*\bkitty$|^exec kitty$", "Terminal (kitty)"),
+    (r"^kill$", "Close window"),
+    (r"rofi -show drun", "App launcher"),
+    (r"rofi -show run", "Run a program"),
+    (r"rofi -show window", "Window switcher"),
+    (r"command_exec_rofi", "Run a shell command (rofi)"),
+    (r"^focus (left|right|up|down)$", r"Focus \1"),
+    (r"^move (left|right|up|down)$", r"Move window \1"),
+    (r"^split h$", "Next window: split horizontally"),
+    (r"^split v$", "Next window: split vertically"),
+    (r"^fullscreen toggle$", "Fullscreen"),
+    (r"^layout stacking$", "Layout: stacked"),
+    (r"^layout tabbed$", "Layout: tabbed"),
+    (r"^layout toggle split$", "Layout: toggle split"),
+    (r"^floating toggle$", "Float / tile (floating shrinks smoothly)"),
+    (r"^workspace back_and_forth$", "Previous workspace"),
+    (r"^workspace \$ws(\d+)$", r"Go to workspace \1"),
+    (r"^move container to workspace \$ws(\d+)$", r"Move window to workspace \1"),
+    (r"^reload$", "Reload i3 config"),
+    (r"^restart$", "Restart i3 (keeps windows)"),
+    (r"i3-nagbar.*exit", "Exit i3 / log out (asks first)"),
+    (r'^mode "resize"$', "Resize mode (h/j/k/l, Esc to leave)"),
+    (r'^mode "default"$', "Leave this mode"),
+    (r"^resize (shrink|grow) (width|height)", r"Resize: \1 \2"),
+    (r"pkill picom", "Kill picom (compositor)"),
+    (r"xkill", "xkill: click a window to force-close it"),
+    (r"polybar", "Start polybar (old bar; the eww bar replaces it)"),
+    (r"lockscreen/lock\.sh", "Lock screen"),
+    (r"scripts/lock\.sh", "Lock screen (old pixelated lock)"),
+    (r"screenie_and_xclip_clipboard", "Screenshot (select region) → clipboard"),
+    (r"screenie_and_xclip", "Screenshot → file + clipboard"),
+    (r"flameshot gui", "Screenshot tool (select area, annotate)"),
+    (r"elisa", "Music player (Elisa)"),
+    (r"thunar ~/Downloads", "Files: Downloads"),
+    (r"thunar$", "Files (Thunar)"),
+    (r"rofi-wifi-menu", "Wi-Fi menu (rofi)"),
+    (r"set-sink-mute", "Mute speakers"),
+    (r"set-source-mute", "Mute microphone"),
+    (r"set-sink-volume .* \+", "Volume up"),
+    (r"set-sink-volume .* -", "Volume down"),
+    (r"volume\.sh up", "Volume up"),
+    (r"volume\.sh down", "Volume down"),
+    (r"brightnessctl.* \+|brightnessctl s \+", "Brightness up"),
+    (r"brightnessctl", "Brightness down"),
+    (r"playerctl play-pause", "Play / pause music"),
+    (r"playerctl next", "Next track"),
+    (r"playerctl previous", "Previous track"),
+    (r"rice-clip pick", "Clipboard history"),
+    (r"dropdown\.sh", "Dropdown terminal (show / hide)"),
+    (r"popup\.sh toggle quicksettings", "Quick settings"),
+    (r"popup\.sh toggle network", "Network popup"),
+    (r"popup\.sh toggle notifications", "Notifications"),
+    (r"popup\.sh toggle calendar", "Calendar & reminders"),
+    (r"popup\.sh close", "Close the open popup"),
+    (r"toggle-details", "Bar: show / hide system details"),
+    (r"wallpaper-picker", "Wallpaper picker"),
+    (r"rice-power-menu", "Power menu (lock, suspend, reboot …)"),
+    (r"rice-sysmon", "System monitor"),
+    (r"rice-dock", "Dock: collapse / expand"),
+    (r"rice-keys", "This cheat sheet"),
+    (r"gaussian-keep", "gaussian_keep (notes, planner, journal, reminders, git)"),
+]
+
+GROUPS = [
+    ("Apps & launchers", r"kitty|rofi|thunar|elisa|command_exec|dropdown|flameshot|screenie|wallpaper|rice-(clip|dock|sysmon)|gaussian-keep|xkill|picom|polybar"),
+    ("Bar & popups", r"popup\.sh|toggle-details|rice-keys|rice-power-menu"),
+    ("Workspaces", r"workspace"),
+    ("Windows & layout", r"^(focus|move|split|layout|fullscreen|floating|kill)|^mode \"resize\""),
+    ("Media, volume, brightness", r"playerctl|volume|sink|source|brightness"),
+    ("Session", r"lock|reload|restart|exit|nagbar"),
+]
+
+KEYNAMES = {"$mod": "Super", "Mod4": "Super", "Mod1": "Alt", "Control": "Ctrl", "Ctrl": "Ctrl",
+            "Return": "Enter", "space": "Space", "bracketright": "]", "bracketleft": "[", "grave": "`",
+            "slash": "/", "plus": "Plus", "minus": "Minus", "Escape": "Esc", "Print": "PrtSc",
+            "XF86AudioPlay": "Play", "XF86AudioPause": "Pause", "XF86AudioNext": "Next track key",
+            "XF86AudioPrev": "Prev track key", "XF86AudioMute": "Mute key", "XF86AudioMicMute": "Mic-mute key",
+            "XF86AudioRaiseVolume": "Vol+ key", "XF86AudioLowerVolume": "Vol- key",
+            "XF86MonBrightnessUp": "Bright+ key", "XF86MonBrightnessDown": "Bright- key"}
+
+
+def norm(line):
+    return " ".join(line.split())
+
+
+def baseline():
+    try:
+        return {norm(l.split(":", 1)[1]) for l in open(BASELINE) if ":" in l}
+    except OSError:
+        return None
+
+
+def pretty_key(combo):
+    parts = [p for p in combo.replace(" ", "").split("+") if p] or ["+"]
+    out = [KEYNAMES.get(p, p.upper() if len(p) == 1 else p) for p in parts]
+    return "+".join(out)
+
+
+def describe(cmd, comment):
+    for rx, text in DESCRIBE:
+        m = re.search(rx, cmd)
+        if m:
+            return m.expand(text)
+    if comment:
+        return comment
+    return cmd.replace("exec --no-startup-id ", "").replace("exec ", "")
+
+
+def split_binding(line):
+    """'bindsym --release $mod+Escape exec x' -> ('$mod+Escape', 'exec x').
+    Also handles keys written with spaces, like 'Mod1 + bracketright'."""
+    toks = line.split()[1:]
+    while toks and toks[0].startswith("--"):
+        toks.pop(0)
+    key = toks.pop(0)
+    while toks and (key.endswith("+") or toks[0].startswith("+")):
+        key += toks.pop(0)
+    return key, " ".join(toks)
+
+
+def bindings():
+    cfg = subprocess.run(["i3-msg", "-t", "get_config"], capture_output=True, text=True).stdout
+    base = baseline()
+    mode, comment, out = None, "", []
+    for raw in cfg.splitlines():
+        line = raw.strip()
+        if line.startswith("#"):
+            comment = line.lstrip("# ").strip()
+            continue
+        m = re.match(r'mode\s+"([^"]+)"\s*\{', line)
+        if m:
+            mode = m.group(1)
+            continue
+        if line == "}":
+            mode = None
+            continue
+        if not re.match(r"bind(sym|code)\s", line):
+            comment = ""
+            continue
+        key, cmd = split_binding(line)
+        if mode == "eww-popup" and key != "Escape":
+            continue   # generated copies of the normal shortcuts (gen-popup-mode.py)
+        out.append({"key": pretty_key(key), "desc": describe(cmd, comment), "mode": mode,
+                    "new": base is not None and norm(line) not in base, "cmd": cmd})
+        comment = ""
+    return out
+
+
+def group_of(b):
+    if b["mode"] == "resize":
+        return "Resize mode (after Super+R)"
+    if b["mode"]:
+        return f'While a popup is open'
+    for name, rx in GROUPS:
+        if re.search(rx, b["cmd"]):
+            return name
+    return "Other"
+
+
+def main():
+    bs = bindings()
+    order = [g for g, _ in GROUPS] + ["Resize mode (after Super+R)", "While a popup is open", "Other"]
+    groups = {g: [] for g in order}
+    for b in bs:
+        groups.setdefault(group_of(b), []).append(b)
+    width = max(len(b["key"]) for b in bs) + 2
+    new_count = sum(b["new"] for b in bs)
+    if "--text" in sys.argv:
+        print(f"i3 shortcuts ({len(bs)} bindings, {new_count} new). Generated from the running config.\n")
+        for g in order:
+            if groups[g]:
+                print(f"── {g}")
+                for b in groups[g]:
+                    print(f"   {b['key']:<{width}} {b['desc']}{'   [new]' if b['new'] else ''}")
+                print()
+        return
+    rows = []
+    esc = lambda s: s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    for g in order:
+        if not groups[g]:
+            continue
+        rows.append(f"<span weight='bold' foreground='#adc6ff'>── {esc(g)}</span>")
+        for b in groups[g]:
+            tag = "  <span foreground='#ffb4ab' size='small'>new</span>" if b["new"] else ""
+            rows.append(f"<tt>  {esc(b['key']):<{width}}</tt> {esc(b['desc'])}{tag}")
+    subprocess.run(["rofi", "-dmenu", "-i", "-markup-rows", "-no-custom", "-p", "Shortcuts",
+                    "-mesg", f"{len(bs)} shortcuts · {new_count} new · type to search · Esc closes",
+                    "-theme-str", "window { width: 860px; } listview { lines: 24; spacing: 0; } element { padding: 3px 12px; }"],
+                   input="\n".join(rows), text=True, capture_output=True)
+
+
+if __name__ == "__main__":
+    main()

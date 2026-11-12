@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Terminal Studio
+Comment=Customize the terminal: font, colors, opacity, prompt, startup art
+Exec=terminal-studio
+Icon=utilities-terminal
+Categories=Settings;System;
+StartupWMClass=TerminalStudio

@@ -1,0 +1,80 @@
+[
+ {
+  "name": "Terminal",
+  "icon": "/home/dark_knight/.config/terminal-greeter/art/batsignal.png",
+  "command": "kitty",
+  "terminal": false
+ },
+ {
+  "name": "Terminal Studio (customize the terminal)",
+  "icon": "preferences-desktop-theme",
+  "command": "terminal-studio",
+  "terminal": false
+ },
+ {
+  "name": "gaussian_keep",
+  "icon": "/home/dark_knight/.local/share/gaussian-keep/web/icon.png",
+  "command": "gaussian-keep",
+  "terminal": false
+ },
+ {
+  "name": "Wallpapers (desktop + lock screen)",
+  "icon": "preferences-desktop-wallpaper",
+  "command": "wallpaper-picker",
+  "terminal": false
+ },
+ {
+  "name": "Neovim (vim)",
+  "icon": "lvim",
+  "command": "vim",
+  "terminal": true
+ },
+ {
+  "name": "Files",
+  "icon": "org.xfce.thunar",
+  "command": "thunar",
+  "terminal": false
+ },
+ {
+  "name": "Firefox",
+  "icon": "firefox",
+  "command": "firefox",
+  "terminal": false
+ },
+ {
+  "name": "Brave",
+  "icon": "brave-browser",
+  "command": "brave-browser",
+  "terminal": false
+ },
+ {
+  "name": "VS Code",
+  "icon": "com.visualstudio.code",
+  "command": "code",
+  "terminal": false
+ },
+ {
+  "name": "Spotify",
+  "icon": "spotify",
+  "command": "spotify",
+  "terminal": false
+ },
+ {
+  "name": "Telegram",
+  "icon": "telegram",
+  "command": "telegram-desktop",
+  "terminal": false
+ },
+ {
+  "name": "Discord",
+  "icon": "com.discordapp.Discord",
+  "command": "flatpak run com.discordapp.Discord",
+  "terminal": false
+ },
+ {
+  "name": "Minecraft",
+  "icon": "minecraft",
+  "command": "minecraft",
+  "terminal": false
+ }
+]

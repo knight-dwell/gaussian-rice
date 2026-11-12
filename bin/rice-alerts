@@ -1,0 +1,3 @@
+#!/bin/sh
+# battery/temperature notifications: ~/.local/share/rice-apps/rice-alerts.py
+exec python3 "$HOME/.local/share/rice-apps/rice-alerts.py" "$@"

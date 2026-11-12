@@ -1,0 +1,3 @@
+#!/bin/sh
+# Rice Dock: floating app launcher (~/.local/share/rice-apps). Running it again toggles collapse.
+exec python3 "$HOME/.local/share/rice-apps/rice-dock.py" "$@"

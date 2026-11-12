@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# wallpaper-picker: choose a wallpaper from ~/Pictures/Wallpapers with
+# previews (rofi), then where to use it: desktop, lock screen, or both.
+#   * desktop: set + saved with nitrogen (restored at login)
+#   * lock:    LOCK_WALLPAPER in ~/.config/lockscreen/lock.conf
+#   * colors:  if ~/.config/theme/theme.conf has COLOR_MODE=wallpaper, the whole
+#              theme is regenerated from the new desktop wallpaper
+# Add wallpapers by copying images into ~/Pictures/Wallpapers.
+#
+#   wallpaper-picker --set FILE   no menus: use FILE for desktop + lock screen
+#                                 (Thunar's "Set as wallpaper"); a copy is put in
+#                                 ~/Pictures/Wallpapers so the picker lists it
+
+DIR="$HOME/Pictures/Wallpapers"
+THUMBS="${XDG_CACHE_HOME:-$HOME/.cache}/wallpaper-picker"
+LOCKCONF="$HOME/.config/lockscreen/lock.conf"
+THEMECONF="$HOME/.config/theme/theme.conf"
+mkdir -p "$DIR" "$THUMBS"
+
+# set KEY="value" in a bash-style conf file (value may contain any characters)
+set_conf() {
+  python3 - "$1" "$2" "$3" <<'PY'
+import re, sys
+path, key, value = sys.argv[1:]
+text = open(path).read()
+line = '%s="%s"' % (key, value.replace("\\", "\\\\").replace('"', '\\"').replace("$", "\\$").replace("`", "\\`"))
+text, n = re.subn(r'(?m)^%s=.*$' % re.escape(key), lambda m: line, text, count=1)
+open(path, "w").write(text if n else text.rstrip("\n") + "\n" + line + "\n")
+PY
+}
+
+current_desktop() { sed -n 's/^file=//p' "$HOME/.config/nitrogen/bg-saved.cfg" 2>/dev/null | head -1; }
+
+if [[ $1 == --set ]]; then
+  img=$(realpath -- "$2" 2>/dev/null)
+  [[ -f $img ]] || { notify-send -a Wallpapers "Not an image file" "$2"; exit 1; }
+  if [[ $img != "$DIR"/* ]]; then
+    base=$(basename -- "$img"); dest="$DIR/$base"
+    [[ -e $dest ]] && ! cmp -s "$img" "$dest" && dest="$DIR/${base%.*}-$(date +%s).${base##*.}"
+    [[ -e $dest ]] || cp -- "$img" "$dest"
+    img=$dest
+  fi
+  target="Desktop + lock screen"
+else
+# ── pick the image ──────────────────────────────────────────────────────────
+mapfile -t files < <(find "$DIR" -maxdepth 1 -type f \
+  \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) | sort)
+if (( ${#files[@]} == 0 )); then
+  notify-send -a Wallpapers "No wallpapers yet" "Copy some images into $DIR"
+  exit 0
+fi
+now=$(current_desktop)
+menu=""
+for f in "${files[@]}"; do
+  t="$THUMBS/$(printf '%s' "$f$(stat -c %Y "$f")" | sha1sum | cut -c1-16).png"
+  [[ -f $t ]] || magick "$f" -resize 320x180^ -gravity center -extent 320x180 "$t" 2>/dev/null
+  name=$(basename "${f%.*}")
+  [[ $f == "$now" ]] && name="● $name"
+  menu+="$name\0icon\x1f$t\n"
+done
+idx=$(printf '%b' "$menu" | rofi -dmenu -i -show-icons -format i -p "Wallpaper" \
+  -theme-str 'window { width: 1000px; } listview { columns: 3; lines: 2; spacing: 12px; }
+              element { orientation: vertical; padding: 10px; } element-icon { size: 180px; }
+              element-text { horizontal-align: 0.5; }') || exit 0
+[[ $idx =~ ^[0-9]+$ ]] || exit 0
+img=${files[$idx]}
+
+# ── where to use it ─────────────────────────────────────────────────────────
+target=$(printf 'Desktop + lock screen\nDesktop only\nLock screen only\n' |
+  rofi -dmenu -i -p "Use $(basename "$img") for" -theme-str 'window { width: 520px; } listview { lines: 3; }') || exit 0
+
+fi
+
+source "$LOCKCONF"
+case "$target" in
+  "Desktop + lock screen")
+    nitrogen --set-zoom-fill --save "$img" >/dev/null 2>&1
+    set_conf "$LOCKCONF" LOCK_WALLPAPER desktop ;;
+  "Desktop only")
+    # keep the lock screen as it is: pin it to the old desktop image
+    [[ $LOCK_WALLPAPER == desktop ]] && set_conf "$LOCKCONF" LOCK_WALLPAPER "$(current_desktop)"
+    nitrogen --set-zoom-fill --save "$img" >/dev/null 2>&1 ;;
+  "Lock screen only")
+    set_conf "$LOCKCONF" LOCK_WALLPAPER "$img" ;;
+  *) exit 0 ;;
+esac
+
+# ── colors ──────────────────────────────────────────────────────────────────
+msg="$target: $(basename "$img")"
+if [[ $target != "Lock screen only" ]]; then
+  set_conf "$THEMECONF" WALLPAPER "$img"
+  if grep -q '^COLOR_MODE=wallpaper' "$THEMECONF"; then
+    "$HOME/.config/theme/scripts/apply-theme.sh" >/dev/null 2>&1
+    msg+=$'\nColors regenerated from the wallpaper.'
+  else
+    msg+=$'\nColors unchanged (theme is in fixed mode; set COLOR_MODE=wallpaper in theme.conf to follow wallpapers).'
+  fi
+fi
+notify-send -a Wallpapers -i preferences-desktop-wallpaper "Wallpaper set" "$msg"
+
+# pre-render the blurred lock background now, so the next lock is instant
+"$HOME/.config/lockscreen/lock.sh" --preview >/dev/null 2>&1 &
